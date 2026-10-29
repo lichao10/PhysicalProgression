@@ -1,0 +1,22 @@
+{
+  "values": {
+    "minecraft:wooden_sword": {
+      "weight": 0.8
+    },
+    "minecraft:stone_sword": {
+      "weight": 1.2
+    },
+    "minecraft:iron_sword": {
+      "weight": 1.5
+    },
+    "minecraft:diamond_sword": {
+      "weight": 1.6
+    },
+    "minecraft:iron_axe": {
+      "weight": 2.5
+    },
+    "minecraft:shield": {
+      "weight": 3.0
+    }
+  }
+}

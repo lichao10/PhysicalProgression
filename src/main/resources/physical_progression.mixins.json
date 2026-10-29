@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "physical_progression.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "EntityMovementMixin",
+    "MiningMixin",
+    "ConnectionTeleportMixin",
+    "SprintMixin",
+    "BreathMixin",
+    "ClimbingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

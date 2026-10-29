@@ -1,0 +1,7 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="All Rights Reserved"
+[[mods]]
+modId="physical_progressionqa"
+version="0.0.0"
+displayName="Local QA Harness"

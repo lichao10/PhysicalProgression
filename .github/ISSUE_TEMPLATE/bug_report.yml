@@ -1,0 +1,26 @@
+name: Bug report / 问题反馈
+description: Report a reproducible Physical Progression problem / 提交可复现的问题
+title: "[Bug] "
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versions / 版本
+      description: Minecraft, NeoForge, Physical Progression; also list server versions if multiplayer.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps, expected result, actual result / 复现步骤、预期和实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Other mods and changed config / 其他模组及修改过的配置
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs and screenshots / 相关日志与截图
+      description: Attach logs/latest.log and crash report when applicable; redact private server addresses.
