@@ -204,14 +204,14 @@ tasks.named("jar") {
 tasks.named('jar') {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
-    from('LICENSE.txt')
+    from('LICENSE')
 }
 abstract class ConditioningReleaseVerifier extends DefaultTask {
     @InputFile abstract org.gradle.api.file.RegularFileProperty getArchive()
     @TaskAction void verifyArtifact() {
         def entries = new java.util.zip.ZipFile(getArchive().get().asFile)
         try {
-            ['META-INF/neoforge.mods.toml','LICENSE.txt','physical_progression.png'].each { assert entries.getEntry(it) != null }
+            ['META-INF/neoforge.mods.toml','LICENSE','physical_progression.png'].each { assert entries.getEntry(it) != null }
             assert !entries.entries().toList().any { it.name.startsWith('physical_progression/gametest/') || it.name == 'data/physical_progression/structure/empty.nbt' }
         } finally { entries.close() }
     }
@@ -227,7 +227,7 @@ tasks.register('releaseBundle', Zip) {
     preserveFileTimestamps = false
     reproducibleFileOrder = true
     from(tasks.named('jar'))
-    from('README.md', 'README_zh-CN.md', 'LICENSE.txt')
+    from('README.md', 'README.zh-CN.md', 'LICENSE')
 }
 
 // The auxiliary installed-client QA mod is kept out of the gameplay source set.
@@ -271,5 +271,5 @@ tasks.register('sourceBundle', Zip) {
     from('gradle/wrapper') { into 'gradle/wrapper' }
     from('.github') { into '.github' }
     from('build.gradle', 'settings.gradle', 'gradle.properties', 'gradlew', 'gradlew.bat',
-         '.gitignore', '.gitattributes', 'README.md', 'README_zh-CN.md', 'LICENSE.txt')
+         '.gitignore', '.gitattributes', 'README.md', 'README.zh-CN.md', 'LICENSE')
 }

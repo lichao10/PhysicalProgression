@@ -40,5 +40,4 @@ repo/
 !**/src/**/repo/
 
 # Machine-specific Gradle settings and generated diagnostics
-gradle/local.properties
 *.log
