@@ -28,7 +28,9 @@ public final class BodySystemTests {
       TestPlayers.connect(this);
       setGameMode(GameType.SURVIVAL);
       MovementTracker.requestInput(this, true);
-      setPos(h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1)).getCenter());
+      setPos(
+          net.minecraft.world.phys.Vec3.atCenterOf(
+              h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1))));
     }
 
     @Override

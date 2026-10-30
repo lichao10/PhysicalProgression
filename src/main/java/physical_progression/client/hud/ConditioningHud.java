@@ -46,10 +46,10 @@ public final class ConditioningHud {
     var mc = Minecraft.getInstance();
     var p = mc.player;
     if (p == null
-        || mc.options.hideGui
+        || mc.gui.hud.isHidden()
         || p.isCreative()
         || p.isSpectator()
-        || mc.screen instanceof physical_progression.client.screen.ConditioningScreen) return;
+        || mc.gui.screen() instanceof physical_progression.client.screen.ConditioningScreen) return;
     var d = p.getData(ClientSnapshot.TYPE);
     renderSnapshot(g, d, toastTicks > 0);
   }

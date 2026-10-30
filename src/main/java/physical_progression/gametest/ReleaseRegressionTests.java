@@ -29,7 +29,7 @@ public final class ReleaseRegressionTests {
           ClientInformation.createDefault());
       TestPlayers.connect(this);
       setGameMode(GameType.SURVIVAL);
-      setPos(h.absolutePos(new BlockPos(1, 2, 1)).getCenter());
+      setPos(net.minecraft.world.phys.Vec3.atCenterOf(h.absolutePos(new BlockPos(1, 2, 1))));
     }
 
     @Override

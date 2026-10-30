@@ -25,7 +25,7 @@ public final class PackagedQaBootstrap {
   public static void tick(ClientTickEvent.Post e) {
     if (!Boolean.getBoolean("physical_progression.rejectQa")) return;
     var mc = Minecraft.getInstance();
-    if (mc.getOverlay() != null || mc.screen == null) return;
+    if (mc.gui.overlay() != null || mc.gui.screen() == null) return;
     if (!connected) {
       connected = true;
       ConnectScreen.startConnecting(
@@ -38,7 +38,7 @@ public final class PackagedQaBootstrap {
       return;
     }
     if (mc.player != null) throw new IllegalStateException("LEGACY_QA old protocol was accepted");
-    if (mc.screen.getClass().getSimpleName().equals("ModMismatchDisconnectedScreen")) {
+    if (mc.gui.screen().getClass().getSimpleName().equals("ModMismatchDisconnectedScreen")) {
       com.mojang.logging.LogUtils.getLogger().info("LEGACY_QA disconnected as expected");
       mc.stop();
       return;

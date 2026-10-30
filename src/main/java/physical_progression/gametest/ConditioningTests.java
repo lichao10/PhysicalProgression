@@ -23,7 +23,9 @@ public final class ConditioningTests {
             ClientInformation.createDefault());
     TestPlayers.connect(p);
     p.setGameMode(GameType.SURVIVAL);
-    p.setPos(h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1)).getCenter());
+    p.setPos(
+        net.minecraft.world.phys.Vec3.atCenterOf(
+            h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1))));
     return p;
   }
 
@@ -257,7 +259,7 @@ public final class ConditioningTests {
     near(h, d.right.endurance.current, remaining, "air mining has no cost");
     var cow =
         h.spawn(
-            net.minecraft.world.entity.EntityType.COW, new net.minecraft.core.BlockPos(1, 2, 1));
+            net.minecraft.world.entity.EntityTypes.COW, new net.minecraft.core.BlockPos(1, 2, 1));
     p.setItemInHand(
         InteractionHand.MAIN_HAND, net.minecraft.world.item.Items.IRON_SWORD.getDefaultInstance());
     cow.hurt(p.damageSources().playerAttack(p), 3);

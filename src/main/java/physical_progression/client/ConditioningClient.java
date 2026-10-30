@@ -35,9 +35,9 @@ public final class ConditioningClient {
       climbHeld = movementHeld = false;
       return;
     }
-    boolean held = mc.screen == null && mc.options.keyJump.isDown();
+    boolean held = mc.gui.screen() == null && mc.options.keyJump.isDown();
     boolean moving =
-        mc.screen == null
+        mc.gui.screen() == null
             && (mc.options.keyUp.isDown()
                 || mc.options.keyDown.isDown()
                 || mc.options.keyLeft.isDown()
@@ -69,7 +69,7 @@ public final class ConditioningClient {
   public static void tick(ClientTickEvent.Post e) {
     var mc = Minecraft.getInstance();
     while (OPEN_SCREEN.consumeClick())
-      if (mc.player != null && mc.screen == null) mc.setScreen(new ConditioningScreen());
+      if (mc.player != null && mc.gui.screen() == null) mc.gui.setScreen(new ConditioningScreen());
     ConditioningHud.tick();
   }
 }

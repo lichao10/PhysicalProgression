@@ -35,7 +35,7 @@ public final class UiRenderTest {
     "hud-bottom-left"
   };
   private static ConditioningScreen screen;
-  private static int frames, stage, oldScale;
+  private static int frames, stage, oldScale, joinedTicks;
   private static String oldLanguage;
   private static physical_progression.config.ConditioningClientConfig.HudAnchor oldAnchor;
   private static boolean finished, connecting;
@@ -59,7 +59,7 @@ public final class UiRenderTest {
   public static void start(ClientTickEvent.Post event) {
     if (!Boolean.getBoolean("physical_progression.uiQa") || screen != null || finished) return;
     var mc = Minecraft.getInstance();
-    if (mc.screen == null || mc.getOverlay() != null) return;
+    if ((mc.gui.screen() == null && !connecting) || mc.gui.overlay() != null) return;
     // Item components are world-bound in 26.1; render against the isolated QA server.
     if (mc.player == null) {
       if (!connecting) {
@@ -76,6 +76,8 @@ public final class UiRenderTest {
       return;
     }
 
+    // Let login notices expire before capturing the mod interface.
+    if (++joinedTicks < 240) return;
     try {
       var file = java.nio.file.Path.of("../build/ui-qa/trained-snapshot.nbt");
       var tag = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
@@ -101,7 +103,7 @@ public final class UiRenderTest {
               return mirror;
             }
           };
-      mc.setScreen(screen);
+      mc.gui.setScreen(screen);
     } catch (Exception exception) {
       throw new IllegalStateException("UI QA requires runGameTestServer snapshot", exception);
     }
@@ -111,17 +113,17 @@ public final class UiRenderTest {
   public static void capture(RenderFrameEvent.Post event) {
     if (screen == null || finished) return;
     var mc = Minecraft.getInstance();
-    if (mc.getOverlay() != null
-        || (mc.screen != screen
-            && !(mc.screen instanceof physical_progression.client.screen.UiSettingsScreen)
-            && !(mc.screen instanceof physical_progression.client.screen.UiPreviewScreen))
+    if (mc.gui.overlay() != null
+        || (mc.gui.screen() != screen
+            && !(mc.gui.screen() instanceof physical_progression.client.screen.UiSettingsScreen)
+            && !(mc.gui.screen() instanceof physical_progression.client.screen.UiPreviewScreen))
         || ++frames < (stage == 10 ? 120 : 45)) return;
     frames = 0;
     boolean finalCapture = stage == PAGES.length - 1;
     Screenshot.grab(
         mc.gameDirectory,
         "physical_progression-qa-" + stage + "-" + PAGES[stage] + ".png",
-        mc.getMainRenderTarget(),
+        mc.gameRenderer.mainRenderTarget(),
         1,
         message -> {
           com.mojang.logging.LogUtils.getLogger().info("UI_QA {}", message.getString());
@@ -153,12 +155,12 @@ public final class UiRenderTest {
       int left = ((int) (screen.width / scale) - 520) / 2,
           top = ((int) (screen.height / scale) - 340) / 2;
       click(screen, (left + 445) * scale, (top + 17) * scale, 0);
-      if (!(mc.screen instanceof physical_progression.client.screen.UiSettingsScreen))
+      if (!(mc.gui.screen() instanceof physical_progression.client.screen.UiSettingsScreen))
         throw new IllegalStateException("Settings entry failed");
       return;
     }
     if (stage == 13) {
-      var settings = mc.screen;
+      var settings = mc.gui.screen();
       var oldMode = physical_progression.config.ConditioningClientConfig.HUD_MODE.get();
       float settingScale = Math.min(1, Math.min(settings.width / 340f, settings.height / 280f));
       click(settings, settings.width / 2.0, 44 * settingScale, 0);
@@ -176,21 +178,22 @@ public final class UiRenderTest {
         throw new IllegalStateException("Slider did not map screen coordinates");
       physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.set(oldText);
       physical_progression.config.ConditioningClientConfig.SPEC.save();
-      mc.screen.onClose();
-      if (mc.screen != screen) throw new IllegalStateException("Settings return failed");
+      mc.gui.screen().onClose();
+      if (mc.gui.screen() != screen) throw new IllegalStateException("Settings return failed");
       return;
     }
     if (stage == 17) {
       physical_progression.config.ConditioningClientConfig.HUD_ANCHOR.set(
           physical_progression.config.ConditioningClientConfig.HudAnchor.BOTTOM_LEFT);
-      mc.setScreen(screen);
+      mc.gui.setScreen(screen);
       return;
     }
     if (stage == 16) {
-      mc.setScreen(new physical_progression.client.screen.UiSettingsScreen(screen));
-      float scale = Math.min(1, Math.min(mc.screen.width / 340f, mc.screen.height / 280f));
-      click(mc.screen, mc.screen.width / 2.0 + 70 * scale, 232 * scale, 0);
-      if (!(mc.screen instanceof physical_progression.client.screen.UiPreviewScreen))
+      mc.gui.setScreen(new physical_progression.client.screen.UiSettingsScreen(screen));
+      float scale =
+          Math.min(1, Math.min(mc.gui.screen().width / 340f, mc.gui.screen().height / 280f));
+      click(mc.gui.screen(), mc.gui.screen().width / 2.0 + 70 * scale, 232 * scale, 0);
+      if (!(mc.gui.screen() instanceof physical_progression.client.screen.UiPreviewScreen))
         throw new IllegalStateException("Preview entry failed");
       return;
     }

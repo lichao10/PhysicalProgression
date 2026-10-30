@@ -57,7 +57,7 @@ public class ConditioningScreen extends Screen {
     addRenderableWidget(
         Button.builder(
                 Component.translatable("ui.physical_progression.settings"),
-                b -> minecraft.setScreen(new UiSettingsScreen(this)))
+                b -> minecraft.gui.setScreen(new UiSettingsScreen(this)))
             .bounds(left + 412, top + 7, 75, 20)
             .build());
     if (minecraft != null && minecraft.player != null)

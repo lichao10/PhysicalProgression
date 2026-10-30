@@ -126,7 +126,7 @@ public final class UiSettingsScreen extends Screen {
     addRenderableWidget(
         Button.builder(
                 Component.translatable("settings.physical_progression.preview"),
-                b -> minecraft.setScreen(new UiPreviewScreen(this)))
+                b -> minecraft.gui.setScreen(new UiPreviewScreen(this)))
             .bounds(x + half + 4, y, half, 20)
             .build());
     y += 23;
@@ -138,7 +138,7 @@ public final class UiSettingsScreen extends Screen {
 
   @Override
   public void onClose() {
-    minecraft.setScreen(parent);
+    minecraft.gui.setScreen(parent);
   }
 
   @Override

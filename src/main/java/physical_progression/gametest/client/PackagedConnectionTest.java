@@ -41,11 +41,11 @@ public final class PackagedConnectionTest {
   public static void tick(ClientTickEvent.Post e) {
     if (!Boolean.getBoolean("physical_progression.connectionQa") || finished) return;
     var mc = Minecraft.getInstance();
-    if (mc.getOverlay() != null) return;
+    if (mc.gui.overlay() != null) return;
     if (++allTicks > 2400)
       throw new IllegalStateException("CONNECTION_QA timed out, phase=" + phase);
     if (phase == 0) {
-      if (mc.screen == null) return;
+      if (mc.gui.screen() == null) return;
       connect();
       phase = 1;
       return;
@@ -124,7 +124,7 @@ public final class PackagedConnectionTest {
       require(savedId > 0, "training record arrived over network");
       mc.player.connection.sendCommand(
           "item replace entity @s armor.chest with minecraft:diamond_chestplate");
-      mc.setScreen(new ConditioningScreen());
+      mc.gui.setScreen(new ConditioningScreen());
       phase = 7;
       ticks = 0;
       return;
@@ -132,11 +132,13 @@ public final class PackagedConnectionTest {
     if (phase == 7) {
       if (++ticks == 1) org.lwjgl.glfw.GLFW.glfwSetCursorPos(mc.getWindow().handle(), 15, 15);
       if (ticks < 180) return;
-      require(mc.screen instanceof ConditioningScreen, "body preview stays open with real player");
+      require(
+          mc.gui.screen() instanceof ConditioningScreen,
+          "body preview stays open with real player");
       Screenshot.grab(
           mc.gameDirectory,
           "physical_progression-connected-body.png",
-          mc.getMainRenderTarget(),
+          mc.gameRenderer.mainRenderTarget(),
           1,
           m -> {});
       com.mojang.logging.LogUtils.getLogger()
