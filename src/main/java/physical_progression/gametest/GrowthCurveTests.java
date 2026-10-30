@@ -1,10 +1,6 @@
 package physical_progression.gametest;
 
 import com.mojang.authlib.GameProfile;
-import physical_progression.arm.ArmSystem;
-import physical_progression.attachment.*;
-import physical_progression.body.*;
-import physical_progression.stamina.*;
 import java.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
@@ -13,10 +9,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.gametest.*;
+import physical_progression.arm.ArmSystem;
+import physical_progression.attachment.*;
+import physical_progression.body.*;
+import physical_progression.stamina.*;
 
 /** Controlled tick replay, not a claim of an hour of human gameplay. */
-@GameTestHolder("physical_progression")
-@PrefixGameTestTemplate(false)
 public final class GrowthCurveTests {
   private static final class Player extends ServerPlayer {
     boolean water;
@@ -43,7 +41,7 @@ public final class GrowthCurveTests {
     }
   }
 
-  @GameTest(template = "empty", timeoutTicks = 400)
+  @ConditioningGameTest(template = "empty", timeoutTicks = 400)
   public static void growthCurves(GameTestHelper h) throws java.io.IOException {
     var csv = new ArrayList<String>();
     csv.add(
@@ -126,7 +124,8 @@ public final class GrowthCurveTests {
             Double.isFinite(d.stamina.current)
                 && d.stamina.current >= 0
                 && d.stamina.current <= d.stamina.maximum + 1e-6,
-            "resources stay finite and bounded during long replay");
+            net.minecraft.network.chat.Component.literal(
+                "resources stay finite and bounded during long replay"));
         if (t == 18000 || t == 36000 || t == 72000) {
           var b = d.body;
           csv.add(

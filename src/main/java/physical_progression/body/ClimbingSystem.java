@@ -1,13 +1,13 @@
 package physical_progression.body;
 
-import physical_progression.arm.ArmSystem;
-import physical_progression.attachment.ModAttachments;
-import physical_progression.config.ConditioningConfig;
-import physical_progression.network.ModNetworking.ClientSnapshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import physical_progression.arm.ArmSystem;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.config.ConditioningConfig;
+import physical_progression.network.ModNetworking.ClientSnapshot;
 
 public final class ClimbingSystem {
   private static final class Intent {
@@ -75,9 +75,9 @@ public final class ClimbingSystem {
               >= arm * DerivedPerformance.armCostMultiplier(d, d.right);
     }
     var d = p.getData(ClientSnapshot.TYPE);
-    return !d.resources.getBoolean("movementSuppressed")
+    return !d.resources.getBooleanOr("movementSuppressed", false)
         && d.ready()
-        && !d.resources.getBoolean("climbExhausted")
+        && !d.resources.getBooleanOr("climbExhausted", false)
         && d.resource("stamina") > 0
         && d.resource("legs") > 0
         && d.resource("left") > 0

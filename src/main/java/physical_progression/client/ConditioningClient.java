@@ -1,8 +1,6 @@
 package physical_progression.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import physical_progression.client.hud.ConditioningHud;
-import physical_progression.client.screen.ConditioningScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +12,8 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import org.lwjgl.glfw.GLFW;
+import physical_progression.client.hud.ConditioningHud;
+import physical_progression.client.screen.ConditioningScreen;
 
 @EventBusSubscriber(modid = "physical_progression", value = Dist.CLIENT)
 public final class ConditioningClient {
@@ -46,7 +46,7 @@ public final class ConditioningClient {
     if (held != climbHeld
         || moving != movementHeld
         || (held || moving) && mc.player.tickCount % 5 == 0)
-      net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+      net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
           new physical_progression.network.ClimbInputPayload(held, moving));
     climbHeld = held;
     movementHeld = moving;
@@ -56,7 +56,8 @@ public final class ConditioningClient {
   @SubscribeEvent
   public static void layers(RegisterGuiLayersEvent e) {
     e.registerAboveAll(
-        ResourceLocation.fromNamespaceAndPath("physical_progression", "hud"), ConditioningHud::render);
+        ResourceLocation.fromNamespaceAndPath("physical_progression", "hud"),
+        ConditioningHud::render);
   }
 
   @SubscribeEvent

@@ -1,13 +1,13 @@
 package physical_progression.event;
 
-import physical_progression.attachment.ModAttachments;
-import physical_progression.stamina.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.stamina.*;
 
 @EventBusSubscriber(modid = "physical_progression")
 public final class PlayerTickHandler {
@@ -28,13 +28,15 @@ public final class PlayerTickHandler {
   @SubscribeEvent
   public static void login(
       net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e) {
-    if (e.getEntity() instanceof ServerPlayer p) physical_progression.network.ModNetworking.sync(p, true);
+    if (e.getEntity() instanceof ServerPlayer p)
+      physical_progression.network.ModNetworking.sync(p, true);
   }
 
   @SubscribeEvent
   public static void respawn(
       net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent e) {
-    if (e.getEntity() instanceof ServerPlayer p) physical_progression.network.ModNetworking.sync(p, true);
+    if (e.getEntity() instanceof ServerPlayer p)
+      physical_progression.network.ModNetworking.sync(p, true);
   }
 
   @SubscribeEvent
@@ -59,7 +61,9 @@ public final class PlayerTickHandler {
       e.setStrength(
           (float)
               (e.getStrength()
-                  / (1 + Math.min(0.2, 0.08 * (b.value(physical_progression.body.BodyAbility.CORE) - 1)))));
+                  / (1
+                      + Math.min(
+                          0.2, 0.08 * (b.value(physical_progression.body.BodyAbility.CORE) - 1)))));
     }
   }
 }

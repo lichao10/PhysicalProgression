@@ -88,7 +88,7 @@ public final class PackagedConnectionTest {
     if (phase == 3) {
       // Keep synthetic input held when the unattended window loses focus.
       mc.options.keyJump.setDown(true);
-      net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+      net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
           new physical_progression.network.ClimbInputPayload(true, false));
       ticks++;
       if (ticks == 100) {
@@ -105,9 +105,9 @@ public final class PackagedConnectionTest {
                 d.resource("stamina"),
                 d.resource("left"),
                 d.resource("right"),
-                d.resources.getString("activity"));
+                d.resources.getStringOr("activity", ""));
       }
-      if (d.resources.getBoolean("climbExhausted")) {
+      if (d.resources.getBooleanOr("climbExhausted", false)) {
         mc.options.keyJump.setDown(false);
         phase = 4;
         ticks = 0;
@@ -119,7 +119,7 @@ public final class PackagedConnectionTest {
     if (phase == 4) {
       if (++ticks < 100) return;
       require(mc.player.getY() < startY + 0.3, "exhaustion causes real descent onto floor");
-      savedId = d.attributes.getCompound("lastSession").getLong("id");
+      savedId = d.attributes.getCompoundOrEmpty("lastSession").getLongOr("id", 0L);
       require(savedId > 0, "training record arrived over network");
       mc.player.connection.sendCommand(
           "item replace entity @s armor.chest with minecraft:diamond_chestplate");
@@ -129,12 +129,14 @@ public final class PackagedConnectionTest {
       return;
     }
     if (phase == 7) {
-      if (++ticks < 60) return;
+      if (++ticks == 1) org.lwjgl.glfw.GLFW.glfwSetCursorPos(mc.getWindow().getWindow(), 15, 15);
+      if (ticks < 180) return;
       require(mc.screen instanceof ConditioningScreen, "body preview stays open with real player");
       Screenshot.grab(
           mc.gameDirectory,
           "physical_progression-connected-body.png",
           mc.getMainRenderTarget(),
+          1,
           m -> {});
       com.mojang.logging.LogUtils.getLogger()
           .info("CONNECTION_QA preview rendered with player and equipment");
@@ -149,13 +151,13 @@ public final class PackagedConnectionTest {
     if (phase == 6) {
       if (++ticks < 40) return;
       require(
-          d.attributes.getCompound("lastSession").getLong("id") >= savedId,
+          d.attributes.getCompoundOrEmpty("lastSession").getLongOr("id", 0L) >= savedId,
           "training history persists across actual disconnect and login");
       com.mojang.logging.LogUtils.getLogger()
           .info(
               "CONNECTION_QA PASS historyId={} reconnectedId={}",
               savedId,
-              d.attributes.getCompound("lastSession").getLong("id"));
+              d.attributes.getCompoundOrEmpty("lastSession").getLongOr("id", 0L));
       finished = true;
       mc.options.keyJump.setDown(false);
       mc.player.connection.getConnection().disconnect(Component.literal("QA complete"));

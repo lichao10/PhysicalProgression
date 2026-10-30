@@ -1,13 +1,13 @@
 package physical_progression.event;
 
-import physical_progression.attachment.ModAttachments;
-import physical_progression.body.BodyAbility;
 import java.util.Locale;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.body.BodyAbility;
 
 @EventBusSubscriber(modid = "physical_progression")
 public final class ConditioningCommands {

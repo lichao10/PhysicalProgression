@@ -1,12 +1,12 @@
 package physical_progression.client.screen;
 
-import physical_progression.client.widget.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import physical_progression.client.widget.*;
 
 public final class BodyPanel {
   public static String condition(physical_progression.client.data.ClientConditioningData d) {
-    if (d.resources.getBoolean("recovering")) return "recovering";
+    if (d.resources.getBooleanOr("recovering", false)) return "recovering";
     double fraction =
         Math.min(
             d.resource("stamina") / Math.max(1, d.resource("staminaMax")),
@@ -19,7 +19,7 @@ public final class BodyPanel {
         ? "exhausted"
         : fraction < 0.2
             ? "fatigued"
-            : !d.resources.getString("activity").equals("rest")
+            : !d.resources.getStringOr("activity", "").equals("rest")
                 ? "working"
                 : fraction < 0.95 ? "warm" : "fresh";
   }
@@ -38,7 +38,11 @@ public final class BodyPanel {
       renderPlayer(p, cx, y + 137, player);
       var font = Minecraft.getInstance().font;
       p.g.drawString(
-          font, Component.translatable("ui.physical_progression.part_right"), p.x + 2, y + 126, 0xFFDDDDDD);
+          font,
+          Component.translatable("ui.physical_progression.part_right"),
+          p.x + 2,
+          y + 126,
+          0xFFDDDDDD);
       p.g.drawString(
           font,
           Component.translatable("ui.physical_progression.part_left"),
@@ -78,37 +82,29 @@ public final class BodyPanel {
         d.resource("legsMax"));
   }
 
-  // Render in the menu's pose space; the vanilla follows-mouse helper clips in unscaled screen
-  // coordinates.
   private static void renderPlayer(
       PanelContext p, int x, int y, net.minecraft.world.entity.player.Player player) {
-    float body = player.yBodyRot, yaw = player.getYRot(), pitch = player.getXRot();
-    float head = player.yHeadRot, previousHead = player.yHeadRotO;
-    float angleX = (float) Math.atan((x - p.mouseX) / 80.0);
-    float angleY = (float) Math.atan((y - 65 - p.mouseY) / 80.0);
-    var tilt = new org.joml.Quaternionf().rotateX(angleY * 20 * (float) Math.PI / 180);
-    try {
-      player.yBodyRot = 180 + angleX * 20;
-      player.setYRot(180 + angleX * 40);
-      player.setXRot(-angleY * 20);
-      player.yHeadRot = player.getYRot();
-      player.yHeadRotO = player.getYRot();
-      net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory(
-          p.g,
-          x,
-          y,
-          55,
-          new org.joml.Vector3f(),
-          new org.joml.Quaternionf().rotateZ((float) Math.PI).mul(tilt),
-          tilt,
-          player);
-    } finally {
-      player.yBodyRot = body;
-      player.setYRot(yaw);
-      player.setXRot(pitch);
-      player.yHeadRot = head;
-      player.yHeadRotO = previousHead;
-    }
+    // Entity previews use screen-space bounds, unlike regular GUI elements in the retained
+    // renderer.
+    var pose = p.g.pose();
+    var start = pose.transformPosition(p.x + 2, y - 122, new org.joml.Vector2f());
+    var end = pose.transformPosition(p.x + p.width - 2, y, new org.joml.Vector2f());
+    var mouse = pose.transformPosition(p.mouseX, p.mouseY, new org.joml.Vector2f());
+    int size = Math.max(1, Math.round(55 * (float) Math.hypot(pose.m00(), pose.m01())));
+    pose.pushMatrix();
+    pose.identity();
+    net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventoryFollowsMouse(
+        p.g,
+        (int) start.x,
+        (int) start.y,
+        (int) end.x,
+        (int) end.y,
+        size,
+        0f,
+        mouse.x,
+        mouse.y,
+        player);
+    pose.popMatrix();
   }
 
   public static void details(PanelContext p) {
@@ -134,7 +130,7 @@ public final class BodyPanel {
         null);
     p.row(
         "ui.physical_progression.recovery_delay",
-        PanelContext.number(p.data.resources.getInt("recoveryDelay") / 20.0) + " s",
+        PanelContext.number(p.data.resources.getIntOr("recoveryDelay", 0) / 20.0) + " s",
         null);
     p.text("ui.physical_progression.capacity_note");
   }

@@ -2,10 +2,10 @@ package physical_progression.body;
 
 import static physical_progression.body.BodyAbility.*;
 
+import net.minecraft.nbt.CompoundTag;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.config.ConditioningConfig;
 import physical_progression.stamina.TrainingMath;
-import net.minecraft.nbt.CompoundTag;
 
 public final class BodyTrainingSystem {
   public static void record(
@@ -84,7 +84,7 @@ public final class BodyTrainingSystem {
 
   public static double totalXp(CompoundTag tag) {
     double xp = 0;
-    for (String key : tag.getAllKeys()) if (key.endsWith("Xp")) xp += tag.getDouble(key);
+    for (String key : tag.keySet()) if (key.endsWith("Xp")) xp += tag.getDoubleOr(key, 0.0);
     return xp;
   }
 
@@ -96,7 +96,7 @@ public final class BodyTrainingSystem {
             ? "rewarded"
             : ConditioningConfig.TRAINING_XP.get() == 0
                 ? "disabled"
-                : body.diveDamaged && tag.getString("activity").equals("diving")
+                : body.diveDamaged && tag.getStringOr("activity", "").equals("diving")
                     ? "drowning"
                     : "too_light");
     body.complete(tag);
@@ -125,12 +125,16 @@ public final class BodyTrainingSystem {
     b.recoveryCredit = 0;
     b.trainingKinds = 0;
     // Spend a finite credit earned by training, so resting alone cannot generate XP.
-    var target=b.lastSession;
-    for(var entry:b.history)if(totalXp(entry)>0){target=entry;break;}
-    boolean recoveryOnly=totalXp(target)<=0;
-    target.putDouble("recoveryXp",target.getDouble("recoveryXp")+stimulus);
-    target.putDouble("recoveryGrowth",target.getDouble("recoveryGrowth")+growth);
-    target.putLong("recoveredAt",System.currentTimeMillis());
-    target.putString("outcome",recoveryOnly?"recovery_only":"rewarded");
+    var target = b.lastSession;
+    for (var entry : b.history)
+      if (totalXp(entry) > 0) {
+        target = entry;
+        break;
+      }
+    boolean recoveryOnly = totalXp(target) <= 0;
+    target.putDouble("recoveryXp", target.getDoubleOr("recoveryXp", 0.0) + stimulus);
+    target.putDouble("recoveryGrowth", target.getDoubleOr("recoveryGrowth", 0.0) + growth);
+    target.putLong("recoveredAt", System.currentTimeMillis());
+    target.putString("outcome", recoveryOnly ? "recovery_only" : "rewarded");
   }
 }

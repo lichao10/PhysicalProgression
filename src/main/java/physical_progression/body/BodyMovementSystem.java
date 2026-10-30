@@ -2,12 +2,12 @@ package physical_progression.body;
 
 import static physical_progression.body.BodyAbility.*;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import physical_progression.arm.*;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.config.ConditioningConfig;
 import physical_progression.stamina.MovementTracker.Movement;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 
 public final class BodyMovementSystem {
   public static void move(

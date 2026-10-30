@@ -5,7 +5,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.network.PacketDistributor;
 import physical_progression.client.ConditioningClient;
 import physical_progression.client.data.ClientConditioningData;
 import physical_progression.network.ModNetworking.ClientSnapshot;
@@ -62,7 +61,8 @@ public class ConditioningScreen extends Screen {
             .bounds(left + 412, top + 7, 75, 20)
             .build());
     if (minecraft != null && minecraft.player != null)
-      PacketDistributor.sendToServer(RequestBodySnapshotPayload.INSTANCE);
+      net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(
+          RequestBodySnapshotPayload.INSTANCE);
   }
 
   // Background is painted before our panels; the default Screen background would blur them again.
@@ -77,17 +77,18 @@ public class ConditioningScreen extends Screen {
   @Override
   public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
     g.fill(0, 0, width, height, 0xAD10100F);
-    g.pose().pushPose();
-    g.pose().scale(scale, scale, 1);
+    g.pose().pushMatrix();
+    g.pose().scale(scale, scale);
     int mx = (int) (mouseX / scale), my = (int) (mouseY / scale);
     physical_progression.client.widget.VanillaTheme.frame(g, left, top, 520, 340);
-    g.drawString(font, "PHYSICAL PROGRESSION", left + 14, top + 13, 0xFFFFD56A);
-    g.drawString(font, title, left + 165, top + 13, 0xFFF4F4F4);
-    g.fill(left + 13, top + 29, left + 400, top + 30, 0xFF555555);
     panel(g, left + 7, top + 37, 98, 229);
     panel(g, left + 110, top + 37, 106, 229);
     panel(g, left + 221, top + 37, 292, 229);
     panel(g, left + 7, top + 272, 506, 61);
+    g.nextStratum();
+    g.drawString(font, "PHYSICAL PROGRESSION", left + 14, top + 13, 0xFFFFD56A);
+    g.drawString(font, title, left + 165, top + 13, 0xFFF4F4F4);
+    g.fill(left + 13, top + 29, left + 400, top + 30, 0xFF555555);
     ClientConditioningData data = snapshot();
     var model = new PanelContext(g, data, left + 116, top + 46, 94, mx, my);
     var content = new PanelContext(g, data, left + 230, top + 47 - (int) scroll, 274, mx, my);
@@ -122,6 +123,7 @@ public class ConditioningScreen extends Screen {
           left + 365,
           top + 135,
           0xFFE3DFD2);
+    g.nextStratum();
     for (var entry : navigation.entrySet()) {
       var button = entry.getValue();
       button.setMessage(
@@ -160,11 +162,11 @@ public class ConditioningScreen extends Screen {
     var tips = new ArrayList<Component>();
     tips.addAll(model.tooltip);
     if (my >= top + 40 && my < top + 264) tips.addAll(content.tooltip);
-    g.pose().popPose();
+    g.pose().popMatrix();
     if (!tips.isEmpty()) {
       var lines = new ArrayList<net.minecraft.util.FormattedCharSequence>();
       for (var tip : tips) lines.addAll(font.split(tip, Math.min(230, width - 20)));
-      g.renderTooltip(font, lines, mouseX, mouseY);
+      g.setTooltipForNextFrame(font, lines, mouseX, mouseY);
     }
   }
 

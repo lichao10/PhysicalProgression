@@ -1,13 +1,13 @@
 package physical_progression.event;
 
-import physical_progression.arm.*;
-import physical_progression.attachment.ModAttachments;
-import physical_progression.config.ConditioningConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import physical_progression.arm.*;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.config.ConditioningConfig;
 
 @EventBusSubscriber(modid = "physical_progression")
 public final class CombatEventHandler {
@@ -46,7 +46,10 @@ public final class CombatEventHandler {
       if (e.getSource().is(net.minecraft.world.damagesource.DamageTypes.DROWN)) {
         p.getData(ModAttachments.PLAYER).body.diveDamaged = true;
         p.getData(ModAttachments.PLAYER).body.breathInvalid = true;
-        p.getData(ModAttachments.PLAYER).body.pending.remove(physical_progression.body.BodyAbility.LUNGS);
+        p.getData(ModAttachments.PLAYER)
+            .body
+            .pending
+            .remove(physical_progression.body.BodyAbility.LUNGS);
       }
       if (e.getSource().is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION))
         physical_progression.stamina.MovementTracker.suppress(p, 30);

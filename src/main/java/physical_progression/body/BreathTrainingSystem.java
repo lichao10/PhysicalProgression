@@ -1,8 +1,8 @@
 package physical_progression.body;
 
+import net.minecraft.server.level.ServerPlayer;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.stamina.MovementTracker;
-import net.minecraft.server.level.ServerPlayer;
 
 /** One breathing session per submersion. Movement is not required. */
 public final class BreathTrainingSystem {

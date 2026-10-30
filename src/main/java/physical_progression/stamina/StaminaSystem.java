@@ -1,9 +1,9 @@
 package physical_progression.stamina;
 
+import net.minecraft.server.level.ServerPlayer;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.body.*;
 import physical_progression.config.ConditioningConfig;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class StaminaSystem {
   public static void tick(ServerPlayer p, PlayerConditioningData d) {

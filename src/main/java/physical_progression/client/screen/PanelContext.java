@@ -1,10 +1,10 @@
 package physical_progression.client.screen;
 
-import physical_progression.client.data.ClientConditioningData;
 import java.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import physical_progression.client.data.ClientConditioningData;
 
 public final class PanelContext {
   public final GuiGraphics g;

@@ -11,7 +11,8 @@ public final class ArmTrainingSystem {
     c.weightedLoad += spent * weight;
     c.activeTicks++;
     c.idleTicks = 0;
-    c.peakFatigue = Math.max(c.peakFatigue, 1 - physical_progression.body.DerivedPerformance.fraction(c));
+    c.peakFatigue =
+        Math.max(c.peakFatigue, 1 - physical_progression.body.DerivedPerformance.fraction(c));
   }
 
   public record Result(

@@ -1,10 +1,10 @@
 package physical_progression.body;
 
-import physical_progression.attachment.PlayerConditioningData;
-import physical_progression.stamina.MovementTracker;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.*;
+import physical_progression.attachment.PlayerConditioningData;
+import physical_progression.stamina.MovementTracker;
 
 public final class BodyPerformanceSystem {
   private static final ResourceLocation

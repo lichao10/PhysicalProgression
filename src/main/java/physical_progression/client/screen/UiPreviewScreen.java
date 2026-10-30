@@ -1,11 +1,11 @@
 package physical_progression.client.screen;
 
-import physical_progression.client.data.ClientConditioningData;
-import physical_progression.client.hud.ConditioningHud;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import physical_progression.client.data.ClientConditioningData;
+import physical_progression.client.hud.ConditioningHud;
 
 /** Explicit sample values let players inspect presentation without affecting gameplay. */
 public final class UiPreviewScreen extends Screen {

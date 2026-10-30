@@ -1,9 +1,9 @@
 package physical_progression.attachment;
 
-import physical_progression.Conditioning;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.*;
+import physical_progression.Conditioning;
 
 public final class ModAttachments {
   public static final DeferredRegister<AttachmentType<?>> REGISTER =

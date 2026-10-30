@@ -1,13 +1,13 @@
 package physical_progression.mixin;
 
-import physical_progression.attachment.ModAttachments;
-import physical_progression.network.ModNetworking.ClientSnapshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.network.ModNetworking.ClientSnapshot;
 
 @Mixin(LivingEntity.class)
 abstract class SprintMixin {

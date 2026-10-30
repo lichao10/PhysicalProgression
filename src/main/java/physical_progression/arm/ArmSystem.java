@@ -1,11 +1,11 @@
 package physical_progression.arm;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import physical_progression.attachment.*;
 import physical_progression.body.*;
 import physical_progression.config.ConditioningConfig;
 import physical_progression.stamina.MovementTracker;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 
 public final class ArmSystem {
   public static void act(
@@ -64,7 +64,7 @@ public final class ArmSystem {
   }
 
   private static void add(net.minecraft.nbt.CompoundTag t, String key, double value) {
-    t.putDouble(key, t.getDouble(key) + value);
+    t.putDouble(key, t.getDoubleOr(key, 0.0) + value);
   }
 
   private static void addResult(

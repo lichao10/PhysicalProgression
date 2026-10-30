@@ -52,14 +52,14 @@ public final class Capacity {
     distance = valid(t, "distance", 0, 0, 1e6);
     weightedLoad = valid(t, "weightedLoad", 0, 0, 1e8);
     peakFatigue = valid(t, "peakFatigue", 0, 0, 1);
-    activeTicks = Math.clamp(t.getInt("activeTicks"), 0, 1000000);
-    elapsedTicks = Math.clamp(t.getInt("elapsedTicks"), 0, 1000000);
-    idleTicks = Math.clamp(t.getInt("idleTicks"), 0, 12000);
-    recoveryTicks = Math.clamp(t.getInt("recoveryTicks"), 0, 12000);
+    activeTicks = Math.clamp(t.getIntOr("activeTicks", 0), 0, 1000000);
+    elapsedTicks = Math.clamp(t.getIntOr("elapsedTicks", 0), 0, 1000000);
+    idleTicks = Math.clamp(t.getIntOr("idleTicks", 0), 0, 12000);
+    recoveryTicks = Math.clamp(t.getIntOr("recoveryTicks", 0), 0, 12000);
   }
 
   public static double valid(CompoundTag t, String k, double fallback, double min, double max) {
-    double v = t.contains(k) ? t.getDouble(k) : fallback;
+    double v = t.getDoubleOr(k, fallback);
     return Double.isFinite(v) ? Math.clamp(v, min, max) : fallback;
   }
 }

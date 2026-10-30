@@ -1,13 +1,13 @@
 package physical_progression.network;
 
-import physical_progression.attachment.*;
-import physical_progression.client.data.ClientConditioningData;
-import physical_progression.config.ConditioningConfig;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import physical_progression.attachment.*;
+import physical_progression.client.data.ClientConditioningData;
+import physical_progression.config.ConditioningConfig;
 
 @EventBusSubscriber(modid = "physical_progression")
 public final class ModNetworking {
@@ -21,7 +21,7 @@ public final class ModNetworking {
             context.enqueueWork(
                 () -> {
                   context.player().getData(ClientSnapshot.TYPE).resources = payload.values();
-                  if (payload.stamina() <= 0 || payload.values().getDouble("legs") <= 0)
+                  if (payload.stamina() <= 0 || payload.values().getDoubleOr("legs", 0.0) <= 0)
                     context.player().setSprinting(false);
                 }));
     registrar.playToClient(
@@ -36,7 +36,8 @@ public final class ModNetworking {
         (payload, context) ->
             context.enqueueWork(
                 () -> {
-                  physical_progression.body.ClimbingSystem.request(context.player(), payload.held());
+                  physical_progression.body.ClimbingSystem.request(
+                      context.player(), payload.held());
                   if (context.player() instanceof ServerPlayer p)
                     physical_progression.stamina.MovementTracker.requestInput(p, payload.moving());
                 }));
@@ -61,12 +62,15 @@ public final class ModNetworking {
     boolean exhausted =
         d.lastSent != null
             && ((d.stamina.current <= 0 && d.lastSent.stamina() > 0)
-                || (d.body.legs.current <= 0 && d.lastSent.values().getDouble("legs") > 0)
-                || (d.left.endurance.current <= 0 && d.lastSent.values().getDouble("left") > 0)
-                || (d.right.endurance.current <= 0 && d.lastSent.values().getDouble("right") > 0));
+                || (d.body.legs.current <= 0 && d.lastSent.values().getDoubleOr("legs", 0.0) > 0)
+                || (d.left.endurance.current <= 0
+                    && d.lastSent.values().getDoubleOr("left", 0.0) > 0)
+                || (d.right.endurance.current <= 0
+                    && d.lastSent.values().getDoubleOr("right", 0.0) > 0));
     boolean completed =
         d.lastDetails == null
-            || d.lastDetails.getCompound("lastSession").getLong("id") != d.body.completedId;
+            || d.lastDetails.getCompoundOrEmpty("lastSession").getLongOr("id", 0L)
+                != d.body.completedId;
     if (force || exhausted || p.tickCount % ConditioningConfig.SYNC_INTERVAL.get() == 0) {
       var snapshot = new SyncConditioningDataPayload(BodySnapshots.resources(p, d));
       if (force || !snapshot.equals(d.lastSent)) {

@@ -1,9 +1,9 @@
 package physical_progression.body;
 
-import physical_progression.attachment.Capacity;
-import physical_progression.config.ConditioningConfig;
 import java.util.EnumMap;
 import net.minecraft.nbt.CompoundTag;
+import physical_progression.attachment.Capacity;
+import physical_progression.config.ConditioningConfig;
 
 public final class BodyState {
   public final EnumMap<BodyAbility, AbilityProgress> abilities = new EnumMap<>(BodyAbility.class);
@@ -98,47 +98,47 @@ public final class BodyState {
   }
 
   public void read(CompoundTag t) {
-    diveDamaged = t.getBoolean("diveDamaged");
+    diveDamaged = t.getBooleanOr("diveDamaged", false);
     for (var a : BodyAbility.values())
-      abilities.get(a).read(t.getCompound("abilities").getCompound(a.key()));
-    legs.read(t.getCompound("legs"));
+      abilities.get(a).read(t.getCompoundOrEmpty("abilities").getCompoundOrEmpty(a.key()));
+    legs.read(t.getCompoundOrEmpty("legs"));
     baseStamina = Capacity.valid(t, "baseStamina", baseStamina, 1, 100000);
     baseLegs = Capacity.valid(t, "baseLegs", baseLegs, 1, 100000);
     recoveryCredit = Capacity.valid(t, "recoveryCredit", 0, 0, 100);
-    trainingKinds = t.getInt("trainingKinds") & 31;
+    trainingKinds = t.getIntOr("trainingKinds", 0) & 31;
     sessionCapacity = Capacity.valid(t, "sessionCapacity", 0, 0, 100000);
     sessionPeakFatigue = Capacity.valid(t, "sessionPeakFatigue", 0, 0, 1);
     sessionRecovered = Capacity.valid(t, "sessionRecovered", 0, 0, 1e6);
     sessionLoad = Capacity.valid(t, "sessionLoad", 0, 0, 1e6);
     sessionDistance = Capacity.valid(t, "sessionDistance", 0, 0, 1e6);
-    sessionTicks = Math.clamp(t.getInt("sessionTicks"), 0, 1000000);
-    sessionIdle = Math.clamp(t.getInt("sessionIdle"), 0, 12000);
-    sessionKinds = t.getInt("sessionKinds") & 31;
-    sessionActivity = t.getString("sessionActivity");
+    sessionTicks = Math.clamp(t.getIntOr("sessionTicks", 0), 0, 1000000);
+    sessionIdle = Math.clamp(t.getIntOr("sessionIdle", 0), 0, 12000);
+    sessionKinds = t.getIntOr("sessionKinds", 0) & 31;
+    sessionActivity = t.getStringOr("sessionActivity", "");
     pending.clear();
     for (var a : BodyAbility.values())
-      add(a, Capacity.valid(t.getCompound("pending"), a.key(), 0, 0, 1e6));
-    completedId = Math.max(0, t.getLong("completedId"));
-    lastSession = t.getCompound("lastSession").copy();
+      add(a, Capacity.valid(t.getCompoundOrEmpty("pending"), a.key(), 0, 0, 1e6));
+    completedId = Math.max(0, t.getLongOr("completedId", 0L));
+    lastSession = t.getCompoundOrEmpty("lastSession").copy();
     history.clear();
-    var records = t.getList("history", net.minecraft.nbt.Tag.TAG_COMPOUND);
+    var records = t.getListOrEmpty("history");
     for (int i = 0; i < Math.min(records.size(), ConditioningConfig.HISTORY_LIMIT.get()); i++) {
-      var entry = records.getCompound(i);
-      if (entry.getLong("id") > 0) history.addLast(entry.copy());
+      var entry = records.getCompoundOrEmpty(i);
+      if (entry.getLongOr("id", 0L) > 0) history.addLast(entry.copy());
     }
-    if (history.isEmpty() && lastSession.getLong("id") > 0) history.addFirst(lastSession);
+    if (history.isEmpty() && lastSession.getLongOr("id", 0L) > 0) history.addFirst(lastSession);
     if (!history.isEmpty()) lastSession = history.getFirst();
-    completedId = Math.max(completedId, lastSession.getLong("id"));
+    completedId = Math.max(completedId, lastSession.getLongOr("id", 0L));
     sessionVertical = Capacity.valid(t, "sessionVertical", 0, 0, 1e6);
     sessionClimbDistance = Capacity.valid(t, "sessionClimbDistance", 0, 0, 1e6);
-    breathActive = t.getBoolean("breathActive");
-    breathPaid = t.getBoolean("breathPaid");
-    breathInvalid = t.getBoolean("breathInvalid") || diveDamaged;
+    breathActive = t.getBooleanOr("breathActive", false);
+    breathPaid = t.getBooleanOr("breathPaid", false);
+    breathInvalid = t.getBooleanOr("breathInvalid", false) || diveDamaged;
     breathSpent = Capacity.valid(t, "breathSpent", 0, 0, 100000);
-    breathStartAir = Math.clamp(t.getInt("breathStartAir"), 0, 100000);
-    breathLastAir = Math.clamp(t.getInt("breathLastAir"), 0, 100000);
-    breathMaximum = Math.clamp(t.getInt("breathMaximum"), 0, 100000);
-    breathTicks = Math.clamp(t.getInt("breathTicks"), 0, 1000000);
+    breathStartAir = Math.clamp(t.getIntOr("breathStartAir", 0), 0, 100000);
+    breathLastAir = Math.clamp(t.getIntOr("breathLastAir", 0), 0, 100000);
+    breathMaximum = Math.clamp(t.getIntOr("breathMaximum", 0), 0, 100000);
+    breathTicks = Math.clamp(t.getIntOr("breathTicks", 0), 0, 1000000);
   }
 
   public void complete(CompoundTag entry) {

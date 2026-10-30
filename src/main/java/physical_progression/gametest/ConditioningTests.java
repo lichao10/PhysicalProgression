@@ -13,8 +13,6 @@ import physical_progression.arm.*;
 import physical_progression.attachment.*;
 import physical_progression.stamina.*;
 
-@GameTestHolder("physical_progression")
-@PrefixGameTestTemplate(false)
 public final class ConditioningTests {
   private static ServerPlayer player(GameTestHelper h) {
     var p =
@@ -29,10 +27,12 @@ public final class ConditioningTests {
   }
 
   private static void near(GameTestHelper h, double a, double b, String label) {
-    h.assertTrue(Math.abs(a - b) < 0.0001, label + ": " + a + " expected " + b);
+    h.assertTrue(
+        Math.abs(a - b) < 0.0001,
+        net.minecraft.network.chat.Component.literal(label + ": " + a + " expected " + b));
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void distanceAndRecovery(GameTestHelper h) {
     var p = player(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -43,11 +43,14 @@ public final class ConditioningTests {
       StaminaSystem.tick(p, d);
     }
     near(h, d.stamina.current, 0, "50 sprint blocks");
-    h.assertFalse(p.isSprinting(), "exhaustion stops sprint");
+    h.assertFalse(
+        p.isSprinting(), net.minecraft.network.chat.Component.literal("exhaustion stops sprint"));
     double walkSpeed =
         p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
     p.setSprinting(true);
-    h.assertFalse(p.isSprinting(), "exhaustion rejects reactivation");
+    h.assertFalse(
+        p.isSprinting(),
+        net.minecraft.network.chat.Component.literal("exhaustion rejects reactivation"));
     near(
         h,
         p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED),
@@ -65,14 +68,16 @@ public final class ConditioningTests {
       walk.setPos(walk.getX() + 0.25, walk.getY(), walk.getZ());
       StaminaSystem.tick(walk, wd);
     }
-    h.assertTrue(wd.stamina.current > 40, "ordinary walking restores stamina in 1.2");
+    h.assertTrue(
+        wd.stamina.current > 40,
+        net.minecraft.network.chat.Component.literal("ordinary walking restores stamina in 1.2"));
     h.assertTrue(
         wd.body.pending.getOrDefault(physical_progression.body.BodyAbility.LEG_ENDURANCE, 0.0) > 0,
-        "long walking trains leg endurance in v2");
+        net.minecraft.network.chat.Component.literal("long walking trains leg endurance in v2"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void rejectExternalMovement(GameTestHelper h) {
     var p = player(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -86,7 +91,9 @@ public final class ConditioningTests {
     StaminaSystem.tick(p, d);
     near(h, d.stamina.load, 0, "piston");
     p.push(0.2, 0.1, 0);
-    h.assertTrue(d.movementSuppression > 0, "external impulse hook");
+    h.assertTrue(
+        d.movementSuppression > 0,
+        net.minecraft.network.chat.Component.literal("external impulse hook"));
     for (int i = 0; i < 30; i++) {
       p.setSprinting(true);
       StaminaSystem.tick(p, d);
@@ -95,7 +102,7 @@ public final class ConditioningTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void adaptation(GameTestHelper h) {
     var d = new PlayerConditioningData();
     physical_progression.body.BodyTrainingSystem.record(d, "sprinting", 5, 5, 1);
@@ -111,20 +118,23 @@ public final class ConditioningTests {
       d.body.add(physical_progression.body.BodyAbility.CARDIO, 40);
       for (int i = 0; i < 60; i++) physical_progression.body.BodyTrainingSystem.tick(d, false);
     }
-    h.assertTrue(d.stamina.maximum > 50, "repeated sessions grow derived capacity");
+    h.assertTrue(
+        d.stamina.maximum > 50,
+        net.minecraft.network.chat.Component.literal("repeated sessions grow derived capacity"));
     h.assertTrue(
         TrainingMath.quality(40.0 / 51, 0.2, 0.7) < TrainingMath.quality(40.0 / 50, 0.2, 0.7),
-        "same route slightly less effective after growth");
+        net.minecraft.network.chat.Component.literal(
+            "same route slightly less effective after growth"));
     h.assertTrue(
         TrainingMath.quality(40.0 / 100, 0.2, 0.7) < TrainingMath.quality(40.0 / 50, 0.2, 0.7),
-        "progressive overload");
+        net.minecraft.network.chat.Component.literal("progressive overload"));
     h.assertTrue(
         TrainingMath.requiredXp(100, 50, 100) > TrainingMath.requiredXp(50, 50, 100),
-        "diminishing growth");
+        net.minecraft.network.chat.Component.literal("diminishing growth"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void persistence(GameTestHelper h) {
     var p = player(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -141,7 +151,8 @@ public final class ConditioningTests {
     near(h, restored.stamina.xp, 42, "xp persists");
     near(h, restored.left.strength, 1.4, "strength persists");
     near(h, restored.right.endurance.load, 12, "session persists");
-    h.assertFalse(restored.positioned, "position resets");
+    h.assertFalse(
+        restored.positioned, net.minecraft.network.chat.Component.literal("position resets"));
     var clone = player(h);
     clone.copyAttachmentsFrom(p, true);
     near(
@@ -161,14 +172,14 @@ public final class ConditioningTests {
       h.assertTrue(
           snapshot.equals(
               physical_progression.network.SyncConditioningDataPayload.STREAM_CODEC.decode(buffer)),
-          "network round trip");
+          net.minecraft.network.chat.Component.literal("network round trip"));
     } finally {
       buffer.release();
     }
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void armsAndWeights(GameTestHelper h) {
     var p = player(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -187,8 +198,12 @@ public final class ConditioningTests {
             info.textFilteringEnabled(),
             info.allowsListing(),
             info.particleStatus()));
-    h.assertTrue(ArmSide.resolve(p, InteractionHand.MAIN_HAND) == ArmSide.LEFT, "left handed main");
-    h.assertTrue(ArmSide.resolve(p, InteractionHand.OFF_HAND) == ArmSide.RIGHT, "left handed off");
+    h.assertTrue(
+        ArmSide.resolve(p, InteractionHand.MAIN_HAND) == ArmSide.LEFT,
+        net.minecraft.network.chat.Component.literal("left handed main"));
+    h.assertTrue(
+        ArmSide.resolve(p, InteractionHand.OFF_HAND) == ArmSide.RIGHT,
+        net.minecraft.network.chat.Component.literal("left handed off"));
     near(
         h,
         ItemWeightManager.weight(net.minecraft.world.item.Items.WOODEN_SWORD.getDefaultInstance()),
@@ -201,7 +216,7 @@ public final class ConditioningTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void armAdaptation(GameTestHelper h) {
     var light = new PlayerConditioningData.Arm();
     var heavy = new PlayerConditioningData.Arm();
@@ -213,13 +228,16 @@ public final class ConditioningTests {
         ArmTrainingSystem.tick(heavy);
       }
     }
-    h.assertTrue(light.endurance.maximum > 30, "light endurance growth");
-    h.assertTrue(heavy.strength > 1, "heavy strength growth");
+    h.assertTrue(
+        light.endurance.maximum > 30,
+        net.minecraft.network.chat.Component.literal("light endurance growth"));
+    h.assertTrue(
+        heavy.strength > 1, net.minecraft.network.chat.Component.literal("heavy strength growth"));
     near(h, light.strength, 1, "light strength isolated");
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void miningAndCombat(GameTestHelper h) {
     var p = player(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -230,7 +248,9 @@ public final class ConditioningTests {
         InteractionHand.MAIN_HAND,
         net.minecraft.world.item.Items.IRON_PICKAXE.getDefaultInstance());
     p.gameMode.destroyBlock(pos);
-    h.assertTrue(d.right.endurance.current < 30, "real block removal costs stamina");
+    h.assertTrue(
+        d.right.endurance.current < 30,
+        net.minecraft.network.chat.Component.literal("real block removal costs stamina"));
     double remaining = d.right.endurance.current;
     p.gameMode.destroyBlock(pos);
     near(h, d.right.endurance.current, remaining, "air mining has no cost");
@@ -240,7 +260,9 @@ public final class ConditioningTests {
     p.setItemInHand(
         InteractionHand.MAIN_HAND, net.minecraft.world.item.Items.IRON_SWORD.getDefaultInstance());
     cow.hurt(p.damageSources().playerAttack(p), 3);
-    h.assertTrue(d.right.endurance.current < remaining, "successful melee damage costs stamina");
+    h.assertTrue(
+        d.right.endurance.current < remaining,
+        net.minecraft.network.chat.Component.literal("successful melee damage costs stamina"));
     near(h, d.left.endurance.current, 30, "combat and mining keep opposite arm unchanged");
     h.succeed();
   }

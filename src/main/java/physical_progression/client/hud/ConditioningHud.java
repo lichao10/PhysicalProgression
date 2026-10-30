@@ -24,7 +24,7 @@ public final class ConditioningHud {
       return;
     }
     var d = p.getData(ClientSnapshot.TYPE);
-    long id = d.attributes.getCompound("lastSession").getLong("id");
+    long id = d.attributes.getCompoundOrEmpty("lastSession").getLongOr("id", 0L);
     if (playerIdentity != p) {
       visibility.clear();
       playerIdentity = p;
@@ -32,9 +32,11 @@ public final class ConditioningHud {
       toastTicks = 0;
     } else if (id > lastId) {
       if ((lastId != 0 || p.tickCount > 40)
-          && (!d.attributes.getCompound("lastSession").contains("outcome")
-              || d.attributes.getCompound("lastSession").getString("outcome").equals("rewarded")))
-        toastTicks = 120;
+          && (!d.attributes.getCompoundOrEmpty("lastSession").contains("outcome")
+              || d.attributes
+                  .getCompoundOrEmpty("lastSession")
+                  .getStringOr("outcome", "")
+                  .equals("rewarded"))) toastTicks = 120;
       lastId = id;
     }
     if (toastTicks > 0) toastTicks--;
@@ -56,15 +58,15 @@ public final class ConditioningHud {
       GuiGraphics g, physical_progression.client.data.ClientConditioningData d, boolean feedback) {
     var mc = Minecraft.getInstance();
     if (!d.ready()) return;
-    g.pose().pushPose();
+    g.pose().pushMatrix();
     float hudScale = ConditioningClientConfig.HUD_SCALE.get().floatValue();
-    g.pose().scale(hudScale, hudScale, 1);
+    g.pose().scale(hudScale, hudScale);
     var visible = HudLayout.visible(d, ConditioningClientConfig.HUD_MODE.get());
     visible.removeIf(
         key -> {
-          double value = key.equals("breath") ? d.resources.getInt("air") : d.resource(key);
+          double value = key.equals("breath") ? d.resources.getIntOr("air", 0) : d.resource(key);
           double maximum =
-              key.equals("breath") ? d.resources.getInt("airMax") : d.resource(key + "Max");
+              key.equals("breath") ? d.resources.getIntOr("airMax", 0) : d.resource(key + "Max");
           return !ConditioningClientConfig.visible(key)
               || (ConditioningClientConfig.HUD_MODE.get()
                       != ConditioningClientConfig.HudMode.ALWAYS_SHOW
@@ -80,9 +82,10 @@ public final class ConditioningHud {
     float elapsed = lastFrame == 0 ? 0.016f : Math.min(0.1f, (now - lastFrame) / 1_000_000_000f);
     lastFrame = now;
     for (String key : new String[] {"stamina", "legs", "left", "right", "breath"}) {
-      double current = key.equals("breath") ? d.resources.getInt("air") / 20.0 : d.resource(key);
+      double current =
+          key.equals("breath") ? d.resources.getIntOr("air", 0) / 20.0 : d.resource(key);
       double max =
-          key.equals("breath") ? d.resources.getInt("airMax") / 20.0 : d.resource(key + "Max");
+          key.equals("breath") ? d.resources.getIntOr("airMax", 0) / 20.0 : d.resource(key + "Max");
       double ratio = Math.clamp(current / Math.max(1, max), 0, 1);
       boolean show =
           visible.contains(key)
@@ -97,41 +100,41 @@ public final class ConditioningHud {
       if (opacity < 0.05f) continue;
       int alpha = (int) (opacity * 255) << 24;
       float textScale = ConditioningClientConfig.HUD_TEXT_SCALE.get().floatValue();
-      g.pose().pushPose();
-      g.pose().translate(8, y, 0);
-      g.pose().scale(textScale, textScale, 1);
+      g.pose().pushMatrix();
+      g.pose().translate(8, y);
+      g.pose().scale(textScale, textScale);
       g.drawString(
           mc.font,
           Component.translatable("hud.physical_progression.short_" + key),
           0,
           0,
           alpha | 0xDDDDDD);
-      g.pose().popPose();
+      g.pose().popMatrix();
       int x = 33, w = 44;
       g.fill(x - 1, y + 1, x + w + 1, y + 7, ((int) (opacity * 100) << 24) | 0x101010);
       g.fill(x, y + 2, x + w, y + 6, ((int) (opacity * 100) << 24) | 0x777777);
       int color = key.equals("breath") ? 0x62B6DB : ConditioningBar.color(ratio) & 0xFFFFFF;
       g.fill(x, y + 2, x + (int) (w * ratio), y + 6, alpha | color);
       if (ratio <= 0.2) {
-        g.pose().pushPose();
-        g.pose().translate(x + w + 4, y, 0);
-        g.pose().scale(textScale, textScale, 1);
+        g.pose().pushMatrix();
+        g.pose().translate(x + w + 4, y);
+        g.pose().scale(textScale, textScale);
         g.drawString(mc.font, Math.round(ratio * 100) + "%", 0, 0, alpha | 0xFFBD75);
-        g.pose().popPose();
+        g.pose().popMatrix();
       }
       y += 11;
     }
-    g.pose().popPose();
+    g.pose().popMatrix();
     if (feedback
         && ConditioningClientConfig.FEEDBACK.get()
         && ConditioningClientConfig.HUD_MODE.get() != ConditioningClientConfig.HudMode.OFF) {
-      var t = d.attributes.getCompound("lastSession");
+      var t = d.attributes.getCompoundOrEmpty("lastSession");
       double xp = 0;
-      for (String key : t.getAllKeys()) if (key.endsWith("Xp")) xp += t.getDouble(key);
+      for (String key : t.keySet()) if (key.endsWith("Xp")) xp += t.getDoubleOr(key, 0.0);
       float toastScale = ConditioningClientConfig.TOAST_SCALE.get().floatValue();
-      g.pose().pushPose();
-      g.pose().translate(g.guiWidth() - 6 - 200 * toastScale, 8, 0);
-      g.pose().scale(toastScale, toastScale, 1);
+      g.pose().pushMatrix();
+      g.pose().translate(g.guiWidth() - 6 - 200 * toastScale, 8);
+      g.pose().scale(toastScale, toastScale);
       int x = 0;
       physical_progression.client.widget.VanillaTheme.frame(g, x, 8, 200, 53);
       g.drawString(
@@ -142,14 +145,15 @@ public final class ConditioningHud {
           0xFFE6D39E);
       g.drawString(
           mc.font,
-          Component.translatable("activity.physical_progression." + t.getString("activity")),
+          Component.translatable("activity.physical_progression." + t.getStringOr("activity", "")),
           x + 9,
           29,
           0xFFE3DDCD);
       g.drawString(mc.font, String.format(Locale.ROOT, "+%.2f XP", xp), x + 9, 42, 0xFFB6CB9D);
       boolean adapted =
-          t.getDouble("maxAfter") > t.getDouble("maxBefore")
-              || t.getAllKeys().stream().anyMatch(k -> k.endsWith("Growth") && t.getDouble(k) > 0);
+          t.getDoubleOr("maxAfter", 0.0) > t.getDoubleOr("maxBefore", 0.0)
+              || t.keySet().stream()
+                  .anyMatch(k -> k.endsWith("Growth") && t.getDoubleOr(k, 0.0) > 0);
       if (adapted)
         g.drawString(
             mc.font,
@@ -157,7 +161,7 @@ public final class ConditioningHud {
             x + 90,
             42,
             0xFFE6D39E);
-      g.pose().popPose();
+      g.pose().popMatrix();
     }
   }
 }

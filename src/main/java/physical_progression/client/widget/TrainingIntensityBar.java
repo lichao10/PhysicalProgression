@@ -6,7 +6,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public final class TrainingIntensityBar {
-  public static String status(double ratio, physical_progression.client.data.ClientConditioningData data) {
+  public static String status(
+      double ratio, physical_progression.client.data.ClientConditioningData data) {
     return ratio <= data.minimumFatigue()
         ? "too_light"
         : ratio < 0.4

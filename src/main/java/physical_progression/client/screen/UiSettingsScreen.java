@@ -152,13 +152,14 @@ public final class UiSettingsScreen extends Screen {
   @Override
   public void render(GuiGraphics g, int mx, int my, float pt) {
     g.fill(0, 0, width, height, 0xBA101010);
-    g.pose().pushPose();
-    g.pose().scale(uiScale, uiScale, 1);
+    g.pose().pushMatrix();
+    g.pose().scale(uiScale, uiScale);
     physical_progression.client.widget.VanillaTheme.frame(
         g, (int) (width / uiScale) / 2 - 164, 5, 328, 270);
+    g.nextStratum();
     super.render(g, (int) (mx / uiScale), (int) (my / uiScale), pt);
     g.drawCenteredString(font, title, (int) (width / uiScale) / 2, 15, 0xFFFFD56A);
-    g.pose().popPose();
+    g.pose().popMatrix();
   }
 
   @Override

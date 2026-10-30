@@ -34,7 +34,8 @@ public final class ConditioningBar {
   /** Compact HUD typography; full-size body-screen bars keep their existing layout. */
   public static void compact(
       GuiGraphics g, String label, int x, int y, int width, double current, double maximum) {
-    float scale = physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.get().floatValue();
+    float scale =
+        physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.get().floatValue();
     double ratio = Math.clamp(current / Math.max(1, maximum), 0, 1);
     smallText(g, Component.translatable(label).getString(), x, y, scale, 0xFFEAEAEA);
     g.fill(x, y + 9, x + width, y + 18, 0xFF101010);
@@ -59,10 +60,10 @@ public final class ConditioningBar {
 
   private static void smallText(
       GuiGraphics g, String text, float x, float y, float scale, int color) {
-    g.pose().pushPose();
-    g.pose().translate(x, y, 0);
-    g.pose().scale(scale, scale, 1);
+    g.pose().pushMatrix();
+    g.pose().translate(x, y);
+    g.pose().scale(scale, scale);
     g.drawString(Minecraft.getInstance().font, text, 0, 0, color);
-    g.pose().popPose();
+    g.pose().popMatrix();
   }
 }

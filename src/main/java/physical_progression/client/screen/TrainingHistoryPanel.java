@@ -3,7 +3,6 @@ package physical_progression.client.screen;
 import java.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 
 /** Bounded history, selected by stable server record id rather than a changing list index. */
@@ -14,12 +13,16 @@ public final class TrainingHistoryPanel {
 
   public void render(PanelContext p, long selected) {
     hits.clear();
-    var records = p.data.attributes.getList("history", Tag.TAG_COMPOUND);
+    var records = p.data.attributes.getListOrEmpty("history");
     if (selected >= 0) {
-      link(p, "‹ " + Component.translatable("ui.physical_progression.history_back").getString(), -1, 18);
+      link(
+          p,
+          "‹ " + Component.translatable("ui.physical_progression.history_back").getString(),
+          -1,
+          18);
       CompoundTag detail = null;
       for (var entry : records)
-        if (entry instanceof CompoundTag tag && tag.getLong("id") == selected) {
+        if (entry instanceof CompoundTag tag && tag.getLongOr("id", 0L) == selected) {
           detail = tag;
           break;
         }
@@ -36,18 +39,19 @@ public final class TrainingHistoryPanel {
       var tag = (CompoundTag) entry;
       String title =
           "#"
-              + tag.getLong("id")
+              + tag.getLongOr("id", 0L)
               + "  "
-              + Component.translatable("activity.physical_progression." + tag.getString("activity"))
+              + Component.translatable(
+                      "activity.physical_progression." + tag.getStringOr("activity", ""))
                   .getString();
       int rowY = p.y;
-      link(p, title, tag.getLong("id"), 44);
+      link(p, title, tag.getLongOr("id", 0L), 44);
       double xp = 0;
-      for (String key : tag.getAllKeys()) if (key.endsWith("Xp")) xp += tag.getDouble(key);
+      for (String key : tag.keySet()) if (key.endsWith("Xp")) xp += tag.getDoubleOr(key, 0.0);
       String summary =
-          TrainingPanel.duration(tag.getInt("ticks"))
+          TrainingPanel.duration(tag.getIntOr("ticks", 0))
               + " · "
-              + PanelContext.percent(tag.getDouble("intensity"))
+              + PanelContext.percent(tag.getDoubleOr("intensity", 0.0))
               + " · +"
               + PanelContext.number(xp)
               + " XP";
@@ -55,7 +59,7 @@ public final class TrainingHistoryPanel {
       String outcome =
           Component.translatable(
                   "outcome.physical_progression."
-                      + (tag.contains("outcome") ? tag.getString("outcome") : "legacy"))
+                      + (tag.contains("outcome") ? tag.getStringOr("outcome", "") : "legacy"))
               .getString();
       p.g.drawString(
           Minecraft.getInstance().font,

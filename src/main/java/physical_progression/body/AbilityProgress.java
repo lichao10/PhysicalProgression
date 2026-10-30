@@ -1,8 +1,8 @@
 package physical_progression.body;
 
+import net.minecraft.nbt.CompoundTag;
 import physical_progression.attachment.Capacity;
 import physical_progression.config.ConditioningConfig;
-import net.minecraft.nbt.CompoundTag;
 
 public final class AbilityProgress {
   public double value = 1, xp;

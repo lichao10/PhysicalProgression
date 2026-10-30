@@ -19,10 +19,10 @@ public final class ClientConditioningData {
   }
 
   public double resource(String key) {
-    return resources.getDouble(key);
+    return resources.getDoubleOr(key, 0.0);
   }
 
   public double attribute(String key) {
-    return attributes.getDouble(key);
+    return attributes.getDoubleOr(key, 0.0);
   }
 }

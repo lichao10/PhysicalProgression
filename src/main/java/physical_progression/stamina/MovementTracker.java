@@ -1,8 +1,8 @@
 package physical_progression.stamina;
 
+import net.minecraft.server.level.ServerPlayer;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.config.ConditioningConfig;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class MovementTracker {
   public record Movement(double distance, double vertical, boolean valid, boolean moving) {}

@@ -71,6 +71,7 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArguments.addAll '--tests', "${project.mod_id}:*", '--report', file('build/reports/gametests.xml').absolutePath
         }
 
         data {

@@ -15,8 +15,10 @@ abstract class MiningMixin {
 
   @Inject(method = "destroyBlock", at = @At("HEAD"))
   private void physical_progression$before(BlockPos pos, CallbackInfoReturnable<Boolean> ci) {
-    physical_progression$hardness = player.level().getBlockState(pos).getDestroySpeed(player.level(), pos);
-    physical_progression$weight = physical_progression.arm.ItemWeightManager.weight(player.getMainHandItem());
+    physical_progression$hardness =
+        player.level().getBlockState(pos).getDestroySpeed(player.level(), pos);
+    physical_progression$weight =
+        physical_progression.arm.ItemWeightManager.weight(player.getMainHandItem());
   }
 
   @Inject(method = "removeBlock", at = @At("RETURN"))

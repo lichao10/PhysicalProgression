@@ -3,20 +3,18 @@ package physical_progression.gametest;
 import static physical_progression.body.BodyAbility.*;
 
 import com.mojang.authlib.GameProfile;
-import physical_progression.arm.*;
-import physical_progression.attachment.*;
-import physical_progression.body.*;
-import physical_progression.network.*;
-import physical_progression.stamina.*;
 import java.util.UUID;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.nbt.*;
 import net.minecraft.server.level.*;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.*;
+import physical_progression.arm.*;
+import physical_progression.attachment.*;
+import physical_progression.body.*;
+import physical_progression.network.*;
+import physical_progression.stamina.*;
 
-@GameTestHolder("physical_progression")
-@PrefixGameTestTemplate(false)
 public final class BodySystemTests {
   private static class TestPlayer extends ServerPlayer {
     boolean water;
@@ -45,10 +43,12 @@ public final class BodySystemTests {
 
   private static void near(GameTestHelper h, double actual, double expected, String label) {
     h.assertTrue(
-        Math.abs(actual - expected) < 0.00001, label + ": " + actual + " expected " + expected);
+        Math.abs(actual - expected) < 0.00001,
+        net.minecraft.network.chat.Component.literal(
+            label + ": " + actual + " expected " + expected));
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void activeWallClimbing(GameTestHelper h) {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -60,36 +60,54 @@ public final class BodySystemTests {
           .setBlockAndUpdate(
               base.east().above(i),
               net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-    h.assertTrue(!p.onClimbable(), "wall requires active input");
+    h.assertTrue(
+        !p.onClimbable(),
+        net.minecraft.network.chat.Component.literal("wall requires active input"));
     ClimbingSystem.request(p, true);
-    h.assertTrue(p.onClimbable(), "active wall is climbable without ladder");
+    h.assertTrue(
+        p.onClimbable(),
+        net.minecraft.network.chat.Component.literal("active wall is climbable without ladder"));
     StaminaSystem.tick(p, d);
     for (int i = 0; i < 80; i++) {
       ClimbingSystem.request(p, true);
       ClimbingSystem.tick(p);
-      h.assertTrue(p.getDeltaMovement().y > 0, "climb actively produces upward motion");
+      h.assertTrue(
+          p.getDeltaMovement().y > 0,
+          net.minecraft.network.chat.Component.literal("climb actively produces upward motion"));
       p.move(net.minecraft.world.entity.MoverType.SELF, p.getDeltaMovement());
       StaminaSystem.tick(p, d);
     }
-    h.assertTrue(d.body.sessionVertical > 10, "active climb gains height");
+    h.assertTrue(
+        d.body.sessionVertical > 10,
+        net.minecraft.network.chat.Component.literal("active climb gains height"));
     h.assertTrue(
         d.stamina.current < 50 && d.left.endurance.current < 30 && d.right.endurance.current < 30,
-        "active climb charges resources");
-    h.assertTrue(d.body.pending.getOrDefault(CLIMBING, 0.0) > 0, "active climb trains ability");
-    h.assertTrue(ClimbingSystem.speed(2) > ClimbingSystem.speed(1), "ability improves speed");
+        net.minecraft.network.chat.Component.literal("active climb charges resources"));
+    h.assertTrue(
+        d.body.pending.getOrDefault(CLIMBING, 0.0) > 0,
+        net.minecraft.network.chat.Component.literal("active climb trains ability"));
+    h.assertTrue(
+        ClimbingSystem.speed(2) > ClimbingSystem.speed(1),
+        net.minecraft.network.chat.Component.literal("ability improves speed"));
     d.left.endurance.current = 0;
     p.tickCount++;
     ClimbingSystem.tick(p);
-    h.assertTrue(!p.onClimbable(), "exhausted arm stops wall climbing");
+    h.assertTrue(
+        !p.onClimbable(),
+        net.minecraft.network.chat.Component.literal("exhausted arm stops wall climbing"));
     d.left.endurance.current = 30;
     ClimbingSystem.request(p, false);
-    h.assertTrue(!p.onClimbable(), "releasing input stops climbing");
+    h.assertTrue(
+        !p.onClimbable(),
+        net.minecraft.network.chat.Component.literal("releasing input stops climbing"));
     ClimbingSystem.request(p, true);
     p.tickCount += 16;
-    h.assertTrue(!p.onClimbable(), "stale input expires");
+    h.assertTrue(
+        !p.onClimbable(), net.minecraft.network.chat.Component.literal("stale input expires"));
     ClimbingSystem.request(p, true);
     p.setPos(p.getX() - 3, p.getY(), p.getZ());
-    h.assertTrue(!p.onClimbable(), "no climbing in open air");
+    h.assertTrue(
+        !p.onClimbable(), net.minecraft.network.chat.Component.literal("no climbing in open air"));
     h.succeed();
   }
 
@@ -100,7 +118,7 @@ public final class BodySystemTests {
     d.body.add(CARDIO, 10);
     for (int i = 0; i < physical_progression.config.ConditioningConfig.SESSION_DELAY.get(); i++)
       BodyTrainingSystem.tick(d, false);
-    double bodyXp = d.body.lastSession.getDouble("cardioXp");
+    double bodyXp = d.body.lastSession.getDoubleOr("cardioXp", 0.0);
     near(h, d.body.abilities.get(CARDIO).xp, bodyXp, "body feedback matches awarded XP");
     var arm = new PlayerConditioningData().left;
     ArmTrainingSystem.record(arm, 12, 2);
@@ -124,7 +142,7 @@ public final class BodySystemTests {
     };
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void configurableTraining(GameTestHelper h) {
     var config = physical_progression.config.ConditioningConfig.TRAINING_XP;
     double original = config.get();
@@ -133,7 +151,9 @@ public final class BodySystemTests {
       var doubled = trainingAtRate(h, 2);
       var disabled = trainingAtRate(h, 0);
       for (int i = 0; i < normal.length; i++) {
-        h.assertTrue(normal[i] > 0, "baseline training exists");
+        h.assertTrue(
+            normal[i] > 0,
+            net.minecraft.network.chat.Component.literal("baseline training exists"));
         near(h, doubled[i], normal[i] * 2, "configured double reward");
         near(h, disabled[i], 0, "configured zero reward");
       }
@@ -167,7 +187,7 @@ public final class BodySystemTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void migrateAndPersist(GameTestHelper h) {
     var d = new PlayerConditioningData();
     d.stamina.maximum = 81;
@@ -193,11 +213,13 @@ public final class BodySystemTests {
         h.getLevel().registryAccess(), migrated.serializeNBT(h.getLevel().registryAccess()));
     near(h, restored.body.value(LUNGS), 1.8, "new ability persists");
     near(h, restored.body.pending.get(CORE), 3, "pending stimulus persists");
-    h.assertTrue(restored.body.diveDamaged, "dive penalty survives relog");
+    h.assertTrue(
+        restored.body.diveDamaged,
+        net.minecraft.network.chat.Component.literal("dive penalty survives relog"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void integratedTraining(GameTestHelper h) throws java.io.IOException {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -214,10 +236,18 @@ public final class BodySystemTests {
       p.setSprinting(false);
       for (int tick = 0; tick < 60; tick++) StaminaSystem.tick(p, d);
     }
-    h.assertTrue(d.body.value(CARDIO) > 1, "cardio grows after sessions");
-    h.assertTrue(d.body.value(LEG_ENDURANCE) > 1, "leg endurance grows");
-    h.assertTrue(d.stamina.maximum > 50, "derived maximum grows");
-    h.assertTrue(d.body.lastSession.getDouble("cardioXp") > 0, "feedback is real XP");
+    h.assertTrue(
+        d.body.value(CARDIO) > 1,
+        net.minecraft.network.chat.Component.literal("cardio grows after sessions"));
+    h.assertTrue(
+        d.body.value(LEG_ENDURANCE) > 1,
+        net.minecraft.network.chat.Component.literal("leg endurance grows"));
+    h.assertTrue(
+        d.stamina.maximum > 50,
+        net.minecraft.network.chat.Component.literal("derived maximum grows"));
+    h.assertTrue(
+        d.body.lastSession.getDoubleOr("cardioXp", 0.0) > 0,
+        net.minecraft.network.chat.Component.literal("feedback is real XP"));
     near(h, d.left.endurance.current, 30, "running leaves arms available");
     d.stamina.current = d.stamina.maximum;
     d.body.legs.current = d.body.legs.maximum;
@@ -238,7 +268,7 @@ public final class BodySystemTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void recoveryCredit(GameTestHelper h) {
     var d = new PlayerConditioningData();
     for (int i = 0; i < 1000; i++) BodyTrainingSystem.recovered(d);
@@ -272,7 +302,7 @@ public final class BodySystemTests {
     StaminaSystem.tick(p, d);
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void groundedJumpValidation(GameTestHelper h) {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -284,8 +314,11 @@ public final class BodySystemTests {
         "standing jumps no strength stimulus");
     jump(p, d, true);
     h.assertTrue(
-        d.body.pending.getOrDefault(LEG_STRENGTH, 0.0) > 0, "completed moving jump stimulus");
-    h.assertTrue(d.body.legs.current < 80, "local jump fatigue");
+        d.body.pending.getOrDefault(LEG_STRENGTH, 0.0) > 0,
+        net.minecraft.network.chat.Component.literal("completed moving jump stimulus"));
+    h.assertTrue(
+        d.body.legs.current < 80,
+        net.minecraft.network.chat.Component.literal("local jump fatigue"));
     near(h, d.body.sessionDistance, 1.2, "jump distance counted once");
     near(h, d.body.sessionTicks, 4, "jump duration counts server ticks once");
     var p2 = new TestPlayer(h);
@@ -302,7 +335,7 @@ public final class BodySystemTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void lungsAndSwimming(GameTestHelper h) {
     var p = new TestPlayer(h);
     p.water = true;
@@ -318,7 +351,8 @@ public final class BodySystemTests {
     p.setPos(p.getX() + 0.2, p.getY(), p.getZ());
     StaminaSystem.tick(p, d);
     double low = d.body.pending.getOrDefault(LUNGS, 0.0);
-    h.assertTrue(low > 0, "low-air swimming stimulus");
+    h.assertTrue(
+        low > 0, net.minecraft.network.chat.Component.literal("low-air swimming stimulus"));
     d.body.diveDamaged = true;
     d.body.pending.remove(LUNGS);
     p.setAirSupply(0);
@@ -331,11 +365,12 @@ public final class BodySystemTests {
     d.body.abilities.get(LUNGS).value = 2;
     near(h, p.getMaxAirSupply(), 390, "lung attribute changes actual breath capacity");
     h.assertTrue(
-        d.left.endurance.current < 30 && d.right.endurance.current < 30, "swimming uses both arms");
+        d.left.endurance.current < 30 && d.right.endurance.current < 30,
+        net.minecraft.network.chat.Component.literal("swimming uses both arms"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void performanceAndBurst(GameTestHelper h) {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -343,39 +378,52 @@ public final class BodySystemTests {
     d.body.abilities.get(LEG_STRENGTH).value = 20;
     d.body.abilities.get(EXPLOSIVENESS).value = 20;
     d.body.abilities.get(MOBILITY).value = 20;
-    h.assertTrue(DerivedPerformance.jumpMultiplier(d) <= 1.15 + 0.0001, "jump gain bounded");
+    h.assertTrue(
+        DerivedPerformance.jumpMultiplier(d) <= 1.15 + 0.0001,
+        net.minecraft.network.chat.Component.literal("jump gain bounded"));
     BodyPerformanceSystem.tick(p, d, true);
-    h.assertTrue(d.body.burstTicks > 0, "start burst");
+    h.assertTrue(
+        d.body.burstTicks > 0, net.minecraft.network.chat.Component.literal("start burst"));
     double speed =
         p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-    h.assertTrue(speed > 0.1, "burst modifier applied");
+    h.assertTrue(
+        speed > 0.1, net.minecraft.network.chat.Component.literal("burst modifier applied"));
     BodyPerformanceSystem.tick(p, d, false);
     BodyPerformanceSystem.tick(p, d, true);
     near(h, d.body.burstTicks, 0, "tap sprint does not reset cooldown");
     d.body.legs.current = 0;
     p.setSprinting(true);
-    h.assertFalse(p.isSprinting(), "leg exhaustion blocks sprint");
-    h.assertTrue(DerivedPerformance.jumpMultiplier(d) < 1.15, "fatigue affects jump");
+    h.assertFalse(
+        p.isSprinting(),
+        net.minecraft.network.chat.Component.literal("leg exhaustion blocks sprint"));
+    h.assertTrue(
+        DerivedPerformance.jumpMultiplier(d) < 1.15,
+        net.minecraft.network.chat.Component.literal("fatigue affects jump"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void gripAndArmFeedback(GameTestHelper h) {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
     double initial = DerivedPerformance.armCostMultiplier(d, d.right);
     d.body.abilities.get(GRIP).value = 3;
-    h.assertTrue(DerivedPerformance.armCostMultiplier(d, d.right) < initial, "grip lowers cost");
+    h.assertTrue(
+        DerivedPerformance.armCostMultiplier(d, d.right) < initial,
+        net.minecraft.network.chat.Component.literal("grip lowers cost"));
     ArmTrainingSystem.record(d.right, 24, 3);
     for (int i = 0; i < 60; i++) ArmSystem.tick(p);
-    h.assertTrue(d.body.abilities.get(GRIP).xp > 0, "qualified arm session trains grip");
     h.assertTrue(
-        d.body.lastSession.getDouble("rightStrengthXp") > 0, "arm feedback uses settled XP");
+        d.body.abilities.get(GRIP).xp > 0,
+        net.minecraft.network.chat.Component.literal("qualified arm session trains grip"));
+    h.assertTrue(
+        d.body.lastSession.getDoubleOr("rightStrengthXp", 0.0) > 0,
+        net.minecraft.network.chat.Component.literal("arm feedback uses settled XP"));
     near(h, d.body.legs.current, 80, "arm training does not drain legs");
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void snapshotContracts(GameTestHelper h) throws Exception {
     var p = new TestPlayer(h);
     var d = p.getData(ModAttachments.PLAYER);
@@ -384,7 +432,8 @@ public final class BodySystemTests {
     d.body.legs.spend(8);
     h.assertTrue(
         first.equals(BodySnapshots.attributes(d)),
-        "resource changes do not change attribute payload");
+        net.minecraft.network.chat.Component.literal(
+            "resource changes do not change attribute payload"));
     var mirror = new physical_progression.client.data.ClientConditioningData();
     mirror.resources = BodySnapshots.resources(p, d);
     mirror.attributes = first;
@@ -392,12 +441,12 @@ public final class BodySystemTests {
         physical_progression.client.hud.HudLayout.visible(
                 mirror, physical_progression.config.ConditioningClientConfig.HudMode.CONTEXTUAL)
             .contains("stamina"),
-        "contextual fatigue visible");
+        net.minecraft.network.chat.Component.literal("contextual fatigue visible"));
     h.assertTrue(
         physical_progression.client.hud.HudLayout.visible(
                 mirror, physical_progression.config.ConditioningClientConfig.HudMode.OFF)
             .isEmpty(),
-        "off hides all");
+        net.minecraft.network.chat.Component.literal("off hides all"));
     var buffer =
         new net.minecraft.network.RegistryFriendlyByteBuf(
             io.netty.buffer.Unpooled.buffer(), h.getLevel().registryAccess());
@@ -406,7 +455,7 @@ public final class BodySystemTests {
       SyncBodyAttributesPayload.STREAM_CODEC.encode(buffer, payload);
       h.assertTrue(
           payload.equals(SyncBodyAttributesPayload.STREAM_CODEC.decode(buffer)),
-          "attribute codec roundtrip");
+          net.minecraft.network.chat.Component.literal("attribute codec roundtrip"));
     } finally {
       buffer.release();
     }
@@ -419,21 +468,24 @@ public final class BodySystemTests {
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void armSessionTiming(GameTestHelper h) {
     var arm = new PlayerConditioningData.Arm();
     ArmTrainingSystem.record(arm, 12, 3);
     for (int i = 0; i < 40; i++)
-      h.assertTrue(ArmTrainingSystem.tick(arm) == null, "session should remain open");
+      h.assertTrue(
+          ArmTrainingSystem.tick(arm) == null,
+          net.minecraft.network.chat.Component.literal("session should remain open"));
     ArmTrainingSystem.record(arm, 12, 3);
     ArmTrainingSystem.Result result = null;
     for (int i = 0; i < 60; i++) result = ArmTrainingSystem.tick(arm);
-    h.assertTrue(result != null, "session settles after rest");
+    h.assertTrue(
+        result != null, net.minecraft.network.chat.Component.literal("session settles after rest"));
     near(h, result.ticks(), 41, "duration measures elapsed exercise ticks, not action count");
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void walkingRecovery(GameTestHelper h) {
     var walk = new TestPlayer(h);
     var stand = new TestPlayer(h);
@@ -448,13 +500,19 @@ public final class BodySystemTests {
       StaminaSystem.tick(walk, wd);
       StaminaSystem.tick(stand, sd);
     }
-    h.assertTrue(wd.stamina.current > 10, "walking has net stamina recovery");
-    h.assertTrue(sd.stamina.current > wd.stamina.current, "standing restores faster");
-    h.assertTrue(wd.body.legs.current > 10, "walking also restores leg capacity");
+    h.assertTrue(
+        wd.stamina.current > 10,
+        net.minecraft.network.chat.Component.literal("walking has net stamina recovery"));
+    h.assertTrue(
+        sd.stamina.current > wd.stamina.current,
+        net.minecraft.network.chat.Component.literal("standing restores faster"));
+    h.assertTrue(
+        wd.body.legs.current > 10,
+        net.minecraft.network.chat.Component.literal("walking also restores leg capacity"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void stationaryBreathTraining(GameTestHelper h) {
     var p = new TestPlayer(h);
     p.water = true;
@@ -466,10 +524,12 @@ public final class BodySystemTests {
       StaminaSystem.tick(p, d);
     }
     h.assertTrue(
-        d.body.abilities.get(LUNGS).xp > 0, "stationary underwater breathing trains lungs");
+        d.body.abilities.get(LUNGS).xp > 0,
+        net.minecraft.network.chat.Component.literal(
+            "stationary underwater breathing trains lungs"));
     h.assertTrue(
-        d.body.lastSession.getString("activity").equals("diving"),
-        "breathing has a separate completion record");
+        d.body.lastSession.getStringOr("activity", "").equals("diving"),
+        net.minecraft.network.chat.Component.literal("breathing has a separate completion record"));
     double xp = d.body.abilities.get(LUNGS).xp;
     for (int i = 0; i < 100; i++) StaminaSystem.tick(p, d);
     near(h, d.body.abilities.get(LUNGS).xp, xp, "one award per breath hold");
@@ -477,11 +537,13 @@ public final class BodySystemTests {
     p.water = false;
     p.setAirSupply(300);
     StaminaSystem.tick(p, d);
-    h.assertFalse(d.body.breathActive, "surface restores readiness");
+    h.assertFalse(
+        d.body.breathActive,
+        net.minecraft.network.chat.Component.literal("surface restores readiness"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void actualLadderTraining(GameTestHelper h) {
     var p = new TestPlayer(h);
     var start = p.blockPosition();
@@ -499,7 +561,8 @@ public final class BodySystemTests {
                       net.minecraft.world.level.block.LadderBlock.FACING,
                       net.minecraft.core.Direction.WEST));
     }
-    h.assertTrue(p.onClimbable(), "actual ladder is detected");
+    h.assertTrue(
+        p.onClimbable(), net.minecraft.network.chat.Component.literal("actual ladder is detected"));
     var d = p.getData(ModAttachments.PLAYER);
     StaminaSystem.tick(p, d);
     for (int i = 0; i < 100; i++) {
@@ -508,17 +571,23 @@ public final class BodySystemTests {
     }
     near(h, d.body.sessionVertical, 10, "vertical climbing distance tracked");
     near(h, d.body.sessionClimbDistance, 10, "total climb distance tracked");
-    h.assertTrue(d.body.activity.equals("climbing"), "climbing shown as activity");
+    h.assertTrue(
+        d.body.activity.equals("climbing"),
+        net.minecraft.network.chat.Component.literal("climbing shown as activity"));
     h.assertTrue(
         d.left.endurance.current < 30 && d.right.endurance.current < 30,
-        "ladder climbing loads both arms");
-    h.assertTrue(d.stamina.current < 40, "climbing has its own cost");
+        net.minecraft.network.chat.Component.literal("ladder climbing loads both arms"));
+    h.assertTrue(
+        d.stamina.current < 40,
+        net.minecraft.network.chat.Component.literal("climbing has its own cost"));
     for (int i = 0; i < 60; i++) StaminaSystem.tick(p, d);
-    h.assertTrue(d.body.lastSession.getDouble("gripXp") > 0, "climbing settles grip stimulus");
+    h.assertTrue(
+        d.body.lastSession.getDoubleOr("gripXp", 0.0) > 0,
+        net.minecraft.network.chat.Component.literal("climbing settles grip stimulus"));
     h.succeed();
   }
 
-  @GameTest(template = "empty")
+  @ConditioningGameTest(template = "empty")
   public static void historyRetention(GameTestHelper h) {
     var d = new PlayerConditioningData();
     for (int i = 0; i < 25; i++) {
@@ -527,8 +596,8 @@ public final class BodySystemTests {
       d.body.complete(record);
     }
     near(h, d.body.history.size(), 20, "history is bounded");
-    near(h, d.body.history.getFirst().getLong("id"), 25, "newest record first");
-    near(h, d.body.history.getLast().getLong("id"), 6, "oldest discarded");
+    near(h, d.body.history.getFirst().getLongOr("id", 0L), 25, "newest record first");
+    near(h, d.body.history.getLast().getLongOr("id", 0L), 6, "oldest discarded");
     var copy = new PlayerConditioningData();
     copy.deserializeNBT(
         h.getLevel().registryAccess(), d.serializeNBT(h.getLevel().registryAccess()));
@@ -536,10 +605,10 @@ public final class BodySystemTests {
     copy.body.lastSession.putDouble("recoveryXp", 2);
     near(
         h,
-        copy.body.history.getFirst().getDouble("recoveryXp"),
+        copy.body.history.getFirst().getDoubleOr("recoveryXp", 0.0),
         2,
         "latest recovery updates the same history record");
-    near(h, d.body.lastSession.getDouble("recoveryXp"), 0, "loaded history independent");
+    near(h, d.body.lastSession.getDoubleOr("recoveryXp", 0.0), 0, "loaded history independent");
     var old = d.body.save();
     old.remove("history");
     var migrated = new BodyState();
@@ -548,7 +617,7 @@ public final class BodySystemTests {
     var synced = BodySnapshots.attributes(d);
     near(
         h,
-        synced.getList("history", Tag.TAG_COMPOUND).size(),
+        synced.getListOrEmpty("history").size(),
         20,
         "history included in attribute synchronization");
     h.succeed();

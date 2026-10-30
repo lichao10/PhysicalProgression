@@ -2,10 +2,10 @@ package physical_progression.body;
 
 import static physical_progression.body.BodyAbility.*;
 
+import net.minecraft.server.level.ServerPlayer;
 import physical_progression.arm.ItemWeightManager;
 import physical_progression.attachment.*;
 import physical_progression.config.ConditioningConfig;
-import net.minecraft.server.level.ServerPlayer;
 
 /** The same server-computed values drive gameplay and screen explanations. */
 public final class DerivedPerformance {
@@ -117,8 +117,16 @@ public final class DerivedPerformance {
     double weight =
         (p.getMainHandItem().isEmpty() ? 0 : ItemWeightManager.weight(p.getMainHandItem()))
             + (p.getOffhandItem().isEmpty() ? 0 : ItemWeightManager.weight(p.getOffhandItem()));
-    for (var item : p.getArmorSlots())
+    for (var slot :
+        new net.minecraft.world.entity.EquipmentSlot[] {
+          net.minecraft.world.entity.EquipmentSlot.HEAD,
+              net.minecraft.world.entity.EquipmentSlot.CHEST,
+          net.minecraft.world.entity.EquipmentSlot.LEGS,
+              net.minecraft.world.entity.EquipmentSlot.FEET
+        }) {
+      var item = p.getItemBySlot(slot);
       if (!item.isEmpty()) weight += ItemWeightManager.weight(item);
+    }
     b.equipmentWeight = weight;
   }
 }

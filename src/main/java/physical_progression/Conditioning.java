@@ -1,11 +1,11 @@
 package physical_progression;
 
-import physical_progression.attachment.ModAttachments;
-import physical_progression.config.ConditioningConfig;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import physical_progression.attachment.ModAttachments;
+import physical_progression.config.ConditioningConfig;
 
 @Mod(Conditioning.MOD_ID)
 public final class Conditioning {

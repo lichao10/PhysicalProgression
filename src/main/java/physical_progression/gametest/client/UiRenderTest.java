@@ -49,8 +49,8 @@ public final class UiRenderTest {
       var file = java.nio.file.Path.of("../build/ui-qa/trained-snapshot.nbt");
       var tag = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
       var mirror = new ClientConditioningData();
-      mirror.resources = tag.getCompound("resources");
-      mirror.attributes = tag.getCompound("attributes");
+      mirror.resources = tag.getCompoundOrEmpty("resources");
+      mirror.attributes = tag.getCompoundOrEmpty("attributes");
       oldScale = mc.options.guiScale().get();
       oldLanguage = mc.getLanguageManager().getSelected();
       oldAnchor = physical_progression.config.ConditioningClientConfig.HUD_ANCHOR.get();
@@ -85,11 +85,16 @@ public final class UiRenderTest {
             && !(mc.screen instanceof physical_progression.client.screen.UiPreviewScreen))
         || ++frames < (stage == 10 ? 120 : 45)) return;
     frames = 0;
+    boolean finalCapture = stage == PAGES.length - 1;
     Screenshot.grab(
         mc.gameDirectory,
         "physical_progression-qa-" + stage + "-" + PAGES[stage] + ".png",
         mc.getMainRenderTarget(),
-        message -> com.mojang.logging.LogUtils.getLogger().info("UI_QA {}", message.getString()));
+        1,
+        message -> {
+          com.mojang.logging.LogUtils.getLogger().info("UI_QA {}", message.getString());
+          if (finalCapture) mc.execute(mc::stop);
+        });
     stage++;
     if (stage == PAGES.length) {
       finished = true;
@@ -99,7 +104,6 @@ public final class UiRenderTest {
       mc.getLanguageManager().setSelected(oldLanguage);
       mc.options.languageCode = oldLanguage;
       mc.options.save();
-      mc.stop();
       return;
     }
     if (stage == 10) {

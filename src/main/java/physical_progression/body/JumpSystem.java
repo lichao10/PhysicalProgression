@@ -2,10 +2,10 @@ package physical_progression.body;
 
 import static physical_progression.body.BodyAbility.*;
 
+import net.minecraft.server.level.ServerPlayer;
 import physical_progression.attachment.PlayerConditioningData;
 import physical_progression.config.ConditioningConfig;
 import physical_progression.stamina.MovementTracker.Movement;
-import net.minecraft.server.level.ServerPlayer;
 
 public final class JumpSystem {
   public static void tick(ServerPlayer p, PlayerConditioningData d, Movement movement) {

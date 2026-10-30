@@ -1,7 +1,7 @@
 package physical_progression.client.screen;
 
-import physical_progression.client.widget.ConditioningBar;
 import net.minecraft.network.chat.Component;
+import physical_progression.client.widget.ConditioningBar;
 
 public final class AttributePanel {
   public static void legs(PanelContext p) {
@@ -27,7 +27,8 @@ public final class AttributePanel {
         "ui.physical_progression.load_penalty",
         PanelContext.percent(p.data.resource("loadPenalty")),
         "tooltip.physical_progression.equipment");
-    p.row("ui.physical_progression.burst", PanelContext.percent(p.data.resource("burstBonus")), null);
+    p.row(
+        "ui.physical_progression.burst", PanelContext.percent(p.data.resource("burstBonus")), null);
   }
 
   public static void arm(PanelContext p, String side) {
@@ -39,10 +40,13 @@ public final class AttributePanel {
     p.attr("core");
     String name =
         p.data.resources.contains(side + "CustomName")
-            ? p.data.resources.getString(side + "CustomName")
-            : Component.translatable(p.data.resources.getString(side + "Item")).getString();
+            ? p.data.resources.getStringOr(side + "CustomName", "")
+            : Component.translatable(p.data.resources.getStringOr(side + "Item", "")).getString();
     p.row("ui.physical_progression.item", name, "tooltip.physical_progression.action_cost");
-    p.row("ui.physical_progression.weight", PanelContext.number(p.data.resource(side + "Weight")), null);
+    p.row(
+        "ui.physical_progression.weight",
+        PanelContext.number(p.data.resource(side + "Weight")),
+        null);
     p.row(
         "ui.physical_progression.action_cost",
         PanelContext.number(p.data.resource(side + "Cost")),
@@ -81,7 +85,7 @@ public final class AttributePanel {
     p.row("ui.physical_progression.base_breath", "15.0 s", null);
     p.row(
         "ui.physical_progression.breath_duration",
-        PanelContext.number(p.data.resources.getInt("airMax") / 20.0) + " s",
+        PanelContext.number(p.data.resources.getIntOr("airMax", 0) / 20.0) + " s",
         "tooltip.physical_progression.breath");
     p.row(
         "ui.physical_progression.recovery_contribution",
@@ -97,13 +101,13 @@ public final class AttributePanel {
         p.x,
         p.y,
         p.width,
-        p.data.resources.getInt("air") / 20.0,
-        p.data.resources.getInt("airMax") / 20.0);
+        p.data.resources.getIntOr("air", 0) / 20.0,
+        p.data.resources.getIntOr("airMax", 0) / 20.0);
     p.y += 30;
     p.row(
         "ui.physical_progression.lung_stimulus",
         Component.translatable(
-                p.data.resources.getBoolean("lungTraining")
+                p.data.resources.getBooleanOr("lungTraining", false)
                     ? "ui.physical_progression.active"
                     : "ui.physical_progression.inactive")
             .getString(),
