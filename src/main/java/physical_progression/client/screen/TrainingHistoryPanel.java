@@ -55,13 +55,13 @@ public final class TrainingHistoryPanel {
               + " · +"
               + PanelContext.number(xp)
               + " XP";
-      p.g.drawString(Minecraft.getInstance().font, summary, p.x + 5, rowY + 16, 0xFFCCCCCC);
+      p.g.text(Minecraft.getInstance().font, summary, p.x + 5, rowY + 16, 0xFFCCCCCC);
       String outcome =
           Component.translatable(
                   "outcome.physical_progression."
                       + (tag.contains("outcome") ? tag.getStringOr("outcome", "") : "legacy"))
               .getString();
-      p.g.drawString(
+      p.g.text(
           Minecraft.getInstance().font,
           TrainingPanel.completedAt(tag) + " · " + outcome,
           p.x + 5,
@@ -79,13 +79,13 @@ public final class TrainingHistoryPanel {
     p.g.fill(p.x, p.y, p.x + p.width, p.y + height - 2, hovered ? 0xFF474747 : 0xFF343434);
     p.g.fill(p.x, p.y, p.x + 2, p.y + height - 2, hovered ? 0xFFFFD56A : 0xFF6D9D3C);
     var font = Minecraft.getInstance().font;
-    p.g.drawString(
+    p.g.text(
         font,
         font.plainSubstrByWidth(label, p.width - 22),
         p.x + 5,
         p.y + 4,
         hovered ? 0xFFF4D893 : 0xFFE3DFD2);
-    p.g.drawString(font, ">", p.x + p.width - 12, p.y + 4, hovered ? 0xFFFFD56A : 0xFFBBBBBB);
+    p.g.text(font, ">", p.x + p.width - 12, p.y + 4, hovered ? 0xFFFFD56A : 0xFFBBBBBB);
     hits.add(new Entry(p.x, p.y, p.width, height - 2, id));
     p.y += height;
   }

@@ -2,19 +2,25 @@ package physical_progression.client.screen;
 
 import java.util.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import physical_progression.client.data.ClientConditioningData;
 
 public final class PanelContext {
-  public final GuiGraphics g;
+  public final GuiGraphicsExtractor g;
   public final ClientConditioningData data;
   public final int x, width, mouseX, mouseY;
   public int y;
   public final List<Component> tooltip = new ArrayList<>();
 
   public PanelContext(
-      GuiGraphics g, ClientConditioningData data, int x, int y, int width, int mx, int my) {
+      GuiGraphicsExtractor g,
+      ClientConditioningData data,
+      int x,
+      int y,
+      int width,
+      int mx,
+      int my) {
     this.g = g;
     this.data = data;
     this.x = x;
@@ -33,7 +39,7 @@ public final class PanelContext {
   }
 
   public void heading(String key) {
-    g.drawString(Minecraft.getInstance().font, Component.translatable(key), x, y, 0xFFFFD56A);
+    g.text(Minecraft.getInstance().font, Component.translatable(key), x, y, 0xFFFFD56A);
     g.fill(x, y + 12, x + width, y + 13, 0xFF555555);
     y += 20;
   }
@@ -43,13 +49,13 @@ public final class PanelContext {
     String label = Component.translatable(key).getString();
     String display = font.plainSubstrByWidth(value, (int) (width * 0.55));
     int valueWidth = font.width(display);
-    g.drawString(
+    g.text(
         font,
         font.plainSubstrByWidth(label, Math.max(25, width - valueWidth - 9)),
         x,
         y,
         0xFFDDDDDD);
-    g.drawString(font, display, x + width - valueWidth, y, 0xFFFFFFFF);
+    g.text(font, display, x + width - valueWidth, y, 0xFFFFFFFF);
     if (mouseX >= x && mouseX < x + width && mouseY >= y - 1 && mouseY < y + 12) {
       g.fill(x, y + 10, x + width, y + 11, 0xFF8E835F);
       tooltip.add(Component.translatable(key));
@@ -77,7 +83,7 @@ public final class PanelContext {
   }
 
   public void text(String key) {
-    g.drawWordWrap(
+    g.textWithWordWrap(
         Minecraft.getInstance().font, Component.translatable(key), x, y, width, 0xFFBBBBBB);
     y += 24;
   }

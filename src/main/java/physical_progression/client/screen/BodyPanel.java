@@ -27,7 +27,7 @@ public final class BodyPanel {
   public static void model(PanelContext p) {
     var d = p.data;
     int cx = p.x + p.width / 2, y = p.y;
-    p.g.drawCenteredString(
+    p.g.centeredText(
         Minecraft.getInstance().font,
         Component.translatable("ui.physical_progression.body"),
         cx,
@@ -37,20 +37,20 @@ public final class BodyPanel {
     if (player != null) {
       renderPlayer(p, cx, y + 137, player);
       var font = Minecraft.getInstance().font;
-      p.g.drawString(
+      p.g.text(
           font,
           Component.translatable("ui.physical_progression.part_right"),
           p.x + 2,
           y + 126,
           0xFFDDDDDD);
-      p.g.drawString(
+      p.g.text(
           font,
           Component.translatable("ui.physical_progression.part_left"),
           p.x + p.width - 12,
           y + 126,
           0xFFDDDDDD);
     } else {
-      p.g.drawWordWrap(
+      p.g.textWithWordWrap(
           Minecraft.getInstance().font,
           Component.translatable("ui.physical_progression.waiting"),
           p.x + 6,
@@ -58,7 +58,7 @@ public final class BodyPanel {
           p.width - 12,
           0xFFAAAAAA);
     }
-    p.g.drawCenteredString(
+    p.g.centeredText(
         Minecraft.getInstance().font,
         Component.translatable("state.physical_progression." + condition(d)),
         cx,
@@ -93,7 +93,7 @@ public final class BodyPanel {
     int size = Math.max(1, Math.round(55 * (float) Math.hypot(pose.m00(), pose.m01())));
     pose.pushMatrix();
     pose.identity();
-    net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventoryFollowsMouse(
+    net.minecraft.client.gui.screens.inventory.InventoryScreen.extractEntityInInventoryFollowsMouse(
         p.g,
         (int) start.x,
         (int) start.y,

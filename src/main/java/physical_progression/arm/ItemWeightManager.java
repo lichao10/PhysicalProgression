@@ -6,7 +6,7 @@ import physical_progression.datamap.ItemWeightData;
 public final class ItemWeightManager {
   public static double weight(ItemStack stack) {
     if (stack.isEmpty()) return 1;
-    var data = stack.getItemHolder().getData(ItemWeightData.TYPE);
+    var data = stack.typeHolder().getData(ItemWeightData.TYPE);
     if (data != null) return data.weight();
     if (stack.getItem() instanceof ShieldItem) return 3;
     if (stack.getItem() instanceof AxeItem) return 2.5;

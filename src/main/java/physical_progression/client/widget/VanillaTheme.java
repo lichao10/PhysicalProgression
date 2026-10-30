@@ -1,12 +1,12 @@
 package physical_progression.client.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** Square inventory-style surfaces shared by the menu, history and feedback. */
 public final class VanillaTheme {
   private VanillaTheme() {}
 
-  public static void frame(GuiGraphics g, int x, int y, int w, int h) {
+  public static void frame(GuiGraphicsExtractor g, int x, int y, int w, int h) {
     g.fill(x, y, x + w, y + h, 0xFF101010);
     g.fill(x + 1, y + 1, x + w - 1, y + h - 1, 0xFF555555);
     g.fill(x + 2, y + 2, x + w - 2, y + h - 2, 0xFFC6C6C6);
@@ -17,7 +17,7 @@ public final class VanillaTheme {
     inset(g, x + 6, y + 6, w - 12, h - 12);
   }
 
-  public static void inset(GuiGraphics g, int x, int y, int w, int h) {
+  public static void inset(GuiGraphicsExtractor g, int x, int y, int w, int h) {
     g.fill(x, y, x + w, y + h, 0xFF111111);
     g.fill(x + 1, y + 1, x + w - 1, y + h - 1, 0xFF292929);
     g.fill(x + 1, y + h - 1, x + w, y + h, 0xFF737373);

@@ -38,7 +38,7 @@ public final class UiRenderTest {
   private static int frames, stage, oldScale;
   private static String oldLanguage;
   private static physical_progression.config.ConditioningClientConfig.HudAnchor oldAnchor;
-  private static boolean finished;
+  private static boolean finished, connecting;
 
   private static boolean click(
       net.minecraft.client.gui.screens.Screen screen, double x, double y, int button) {
@@ -60,6 +60,22 @@ public final class UiRenderTest {
     if (!Boolean.getBoolean("physical_progression.uiQa") || screen != null || finished) return;
     var mc = Minecraft.getInstance();
     if (mc.screen == null || mc.getOverlay() != null) return;
+    // Item components are world-bound in 26.1; render against the isolated QA server.
+    if (mc.player == null) {
+      if (!connecting) {
+        connecting = true;
+        net.minecraft.client.gui.screens.ConnectScreen.startConnecting(
+            new net.minecraft.client.gui.screens.TitleScreen(),
+            mc,
+            net.minecraft.client.multiplayer.resolver.ServerAddress.parseString("127.0.0.1:25573"),
+            new net.minecraft.client.multiplayer.ServerData(
+                "UI QA", "127.0.0.1:25573", net.minecraft.client.multiplayer.ServerData.Type.OTHER),
+            false,
+            null);
+      }
+      return;
+    }
+
     try {
       var file = java.nio.file.Path.of("../build/ui-qa/trained-snapshot.nbt");
       var tag = NbtIo.readCompressed(file, NbtAccounter.unlimitedHeap());
@@ -72,11 +88,12 @@ public final class UiRenderTest {
       screen =
           new ConditioningScreen() {
             @Override
-            public void render(net.minecraft.client.gui.GuiGraphics g, int mx, int my, float pt) {
+            public void extractRenderState(
+                net.minecraft.client.gui.GuiGraphicsExtractor g, int mx, int my, float pt) {
               if (stage == 14 || stage == 17) {
                 g.fill(0, 0, width, height, 0xFF303C43);
                 physical_progression.client.hud.ConditioningHud.renderSnapshot(g, mirror, true);
-              } else super.render(g, mx, my, pt);
+              } else super.extractRenderState(g, mx, my, pt);
             }
 
             @Override
@@ -123,7 +140,7 @@ public final class UiRenderTest {
     }
     if (stage == 10) {
       mc.options.guiScale().set(4);
-      mc.resizeDisplay();
+      mc.resizeGui();
       mc.getLanguageManager().setSelected("zh_cn");
       mc.options.languageCode = "zh_cn";
       mc.reloadResourcePacks();

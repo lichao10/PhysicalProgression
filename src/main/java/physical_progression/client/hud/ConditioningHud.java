@@ -3,7 +3,7 @@ package physical_progression.client.hud;
 import java.util.Locale;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import physical_progression.client.widget.ConditioningBar;
 import physical_progression.config.ConditioningClientConfig;
@@ -42,7 +42,7 @@ public final class ConditioningHud {
     if (toastTicks > 0) toastTicks--;
   }
 
-  public static void render(GuiGraphics g, DeltaTracker delta) {
+  public static void render(GuiGraphicsExtractor g, DeltaTracker delta) {
     var mc = Minecraft.getInstance();
     var p = mc.player;
     if (p == null
@@ -55,7 +55,9 @@ public final class ConditioningHud {
   }
 
   public static void renderSnapshot(
-      GuiGraphics g, physical_progression.client.data.ClientConditioningData d, boolean feedback) {
+      GuiGraphicsExtractor g,
+      physical_progression.client.data.ClientConditioningData d,
+      boolean feedback) {
     var mc = Minecraft.getInstance();
     if (!d.ready()) return;
     g.pose().pushMatrix();
@@ -103,7 +105,7 @@ public final class ConditioningHud {
       g.pose().pushMatrix();
       g.pose().translate(8, y);
       g.pose().scale(textScale, textScale);
-      g.drawString(
+      g.text(
           mc.font,
           Component.translatable("hud.physical_progression.short_" + key),
           0,
@@ -119,7 +121,7 @@ public final class ConditioningHud {
         g.pose().pushMatrix();
         g.pose().translate(x + w + 4, y);
         g.pose().scale(textScale, textScale);
-        g.drawString(mc.font, Math.round(ratio * 100) + "%", 0, 0, alpha | 0xFFBD75);
+        g.text(mc.font, Math.round(ratio * 100) + "%", 0, 0, alpha | 0xFFBD75);
         g.pose().popMatrix();
       }
       y += 11;
@@ -137,25 +139,25 @@ public final class ConditioningHud {
       g.pose().scale(toastScale, toastScale);
       int x = 0;
       physical_progression.client.widget.VanillaTheme.frame(g, x, 8, 200, 53);
-      g.drawString(
+      g.text(
           mc.font,
           Component.translatable("ui.physical_progression.training_complete"),
           x + 9,
           16,
           0xFFE6D39E);
-      g.drawString(
+      g.text(
           mc.font,
           Component.translatable("activity.physical_progression." + t.getStringOr("activity", "")),
           x + 9,
           29,
           0xFFE3DDCD);
-      g.drawString(mc.font, String.format(Locale.ROOT, "+%.2f XP", xp), x + 9, 42, 0xFFB6CB9D);
+      g.text(mc.font, String.format(Locale.ROOT, "+%.2f XP", xp), x + 9, 42, 0xFFB6CB9D);
       boolean adapted =
           t.getDoubleOr("maxAfter", 0.0) > t.getDoubleOr("maxBefore", 0.0)
               || t.keySet().stream()
                   .anyMatch(k -> k.endsWith("Growth") && t.getDoubleOr(k, 0.0) > 0);
       if (adapted)
-        g.drawString(
+        g.text(
             mc.font,
             Component.translatable("ui.physical_progression.adaptation"),
             x + 90,

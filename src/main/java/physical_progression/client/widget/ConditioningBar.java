@@ -2,7 +2,7 @@ package physical_progression.client.widget;
 
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public final class ConditioningBar {
@@ -13,10 +13,16 @@ public final class ConditioningBar {
   }
 
   public static void draw(
-      GuiGraphics g, String label, int x, int y, int width, double current, double maximum) {
+      GuiGraphicsExtractor g,
+      String label,
+      int x,
+      int y,
+      int width,
+      double current,
+      double maximum) {
     var font = Minecraft.getInstance().font;
     double ratio = Math.clamp(current / Math.max(1, maximum), 0, 1);
-    g.drawString(font, Component.translatable(label), x, y, 0xFFEAEAEA);
+    g.text(font, Component.translatable(label), x, y, 0xFFEAEAEA);
     g.fill(x, y + 11, x + width, y + 22, 0xFF101010);
     g.fill(x + 1, y + 12, x + width - 1, y + 21, 0xFF484848);
     g.fill(x + 1, y + 12, x + 1 + (int) ((width - 2) * ratio), y + 21, color(ratio));
@@ -28,12 +34,18 @@ public final class ConditioningBar {
             label.endsWith(".breath") ? "%.1f / %.1f" : "%.0f / %.0f",
             current,
             maximum);
-    g.drawString(font, value, x + (width - font.width(value)) / 2, y + 13, 0xFFFFFFFF);
+    g.text(font, value, x + (width - font.width(value)) / 2, y + 13, 0xFFFFFFFF);
   }
 
   /** Compact HUD typography; full-size body-screen bars keep their existing layout. */
   public static void compact(
-      GuiGraphics g, String label, int x, int y, int width, double current, double maximum) {
+      GuiGraphicsExtractor g,
+      String label,
+      int x,
+      int y,
+      int width,
+      double current,
+      double maximum) {
     float scale =
         physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.get().floatValue();
     double ratio = Math.clamp(current / Math.max(1, maximum), 0, 1);
@@ -59,11 +71,11 @@ public final class ConditioningBar {
   }
 
   private static void smallText(
-      GuiGraphics g, String text, float x, float y, float scale, int color) {
+      GuiGraphicsExtractor g, String text, float x, float y, float scale, int color) {
     g.pose().pushMatrix();
     g.pose().translate(x, y);
     g.pose().scale(scale, scale);
-    g.drawString(Minecraft.getInstance().font, text, 0, 0, color);
+    g.text(Minecraft.getInstance().font, text, 0, 0, color);
     g.pose().popMatrix();
   }
 }

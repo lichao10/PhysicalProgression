@@ -2,7 +2,7 @@ package physical_progression.client.widget;
 
 import java.util.Locale;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public final class TrainingIntensityBar {
@@ -16,7 +16,7 @@ public final class TrainingIntensityBar {
   }
 
   public static void draw(
-      GuiGraphics g,
+      GuiGraphicsExtractor g,
       int x,
       int y,
       int width,
@@ -34,13 +34,13 @@ public final class TrainingIntensityBar {
     int marker = x + (int) (Math.clamp(ratio, 0, 1) * (width - 1));
     g.fill(marker, y - 2, marker + 1, y + 8, 0xFFFFFFFF);
     var font = Minecraft.getInstance().font;
-    g.drawString(
+    g.text(
         font,
         Component.translatable("quality.physical_progression." + status(ratio, data)),
         x,
         y + 10,
         0xFFE6DECA);
     String percent = String.format(Locale.ROOT, "%.0f%%", ratio * 100);
-    g.drawString(font, percent, x + width - font.width(percent), y + 10, 0xFFFFFFFF);
+    g.text(font, percent, x + width - font.width(percent), y + 10, 0xFFFFFFFF);
   }
 }

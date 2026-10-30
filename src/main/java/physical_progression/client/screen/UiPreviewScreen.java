@@ -1,6 +1,6 @@
 package physical_progression.client.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -50,13 +50,13 @@ public final class UiPreviewScreen extends Screen {
   }
 
   @Override
-  public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
+  public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float pt) {}
 
   @Override
-  public void render(GuiGraphics g, int mx, int my, float pt) {
+  public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float pt) {
     g.fill(0, 0, width, height, 0xFF303C43);
     ConditioningHud.renderSnapshot(g, data, true);
-    super.render(g, mx, my, pt);
-    g.drawCenteredString(font, title, width / 2, height - 44, 0xFFEAE3CC);
+    super.extractRenderState(g, mx, my, pt);
+    g.centeredText(font, title, width / 2, height - 44, 0xFFEAE3CC);
   }
 }

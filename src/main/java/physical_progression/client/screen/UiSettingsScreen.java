@@ -1,6 +1,6 @@
 package physical_progression.client.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -147,18 +147,18 @@ public final class UiSettingsScreen extends Screen {
   }
 
   @Override
-  public void renderBackground(GuiGraphics g, int mx, int my, float pt) {}
+  public void extractBackground(GuiGraphicsExtractor g, int mx, int my, float pt) {}
 
   @Override
-  public void render(GuiGraphics g, int mx, int my, float pt) {
+  public void extractRenderState(GuiGraphicsExtractor g, int mx, int my, float pt) {
     g.fill(0, 0, width, height, 0xBA101010);
     g.pose().pushMatrix();
     g.pose().scale(uiScale, uiScale);
     physical_progression.client.widget.VanillaTheme.frame(
         g, (int) (width / uiScale) / 2 - 164, 5, 328, 270);
     g.nextStratum();
-    super.render(g, (int) (mx / uiScale), (int) (my / uiScale), pt);
-    g.drawCenteredString(font, title, (int) (width / uiScale) / 2, 15, 0xFFFFD56A);
+    super.extractRenderState(g, (int) (mx / uiScale), (int) (my / uiScale), pt);
+    g.centeredText(font, title, (int) (width / uiScale) / 2, 15, 0xFFFFD56A);
     g.pose().popMatrix();
   }
 

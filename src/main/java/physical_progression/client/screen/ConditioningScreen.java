@@ -1,7 +1,7 @@
 package physical_progression.client.screen;
 
 import java.util.*;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -67,7 +67,8 @@ public class ConditioningScreen extends Screen {
 
   // Background is painted before our panels; the default Screen background would blur them again.
   @Override
-  public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {}
+  public void extractBackground(
+      GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {}
 
   @Override
   public boolean isPauseScreen() {
@@ -75,7 +76,8 @@ public class ConditioningScreen extends Screen {
   }
 
   @Override
-  public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+  public void extractRenderState(
+      GuiGraphicsExtractor g, int mouseX, int mouseY, float partialTick) {
     g.fill(0, 0, width, height, 0xAD10100F);
     g.pose().pushMatrix();
     g.pose().scale(scale, scale);
@@ -86,8 +88,8 @@ public class ConditioningScreen extends Screen {
     panel(g, left + 221, top + 37, 292, 229);
     panel(g, left + 7, top + 272, 506, 61);
     g.nextStratum();
-    g.drawString(font, "PHYSICAL PROGRESSION", left + 14, top + 13, 0xFFFFD56A);
-    g.drawString(font, title, left + 165, top + 13, 0xFFF4F4F4);
+    g.text(font, "PHYSICAL PROGRESSION", left + 14, top + 13, 0xFFFFD56A);
+    g.text(font, title, left + 165, top + 13, 0xFFF4F4F4);
     g.fill(left + 13, top + 29, left + 400, top + 30, 0xFF555555);
     ClientConditioningData data = snapshot();
     var model = new PanelContext(g, data, left + 116, top + 46, 94, mx, my);
@@ -117,7 +119,7 @@ public class ConditioningScreen extends Screen {
       g.disableScissor();
       TrainingPanel.footer(footer);
     } else
-      g.drawCenteredString(
+      g.centeredText(
           font,
           Component.translatable("ui.physical_progression.waiting"),
           left + 365,
@@ -141,7 +143,7 @@ public class ConditioningScreen extends Screen {
             0xFFFFD56A);
       }
     }
-    super.render(g, mx, my, partialTick);
+    super.extractRenderState(g, mx, my, partialTick);
     for (var entry : navigation.entrySet()) {
       int iconY = entry.getValue().getY();
       physical_progression.client.widget.VanillaTheme.inset(g, left + 10, iconY, 20, 20);
@@ -157,7 +159,7 @@ public class ConditioningScreen extends Screen {
             case "training" -> net.minecraft.world.item.Items.WRITABLE_BOOK;
             default -> net.minecraft.world.item.Items.COMPASS;
           };
-      g.renderItem(icon.getDefaultInstance(), left + 12, iconY + 2);
+      g.item(icon.getDefaultInstance(), left + 12, iconY + 2);
     }
     var tips = new ArrayList<Component>();
     tips.addAll(model.tooltip);
@@ -182,7 +184,7 @@ public class ConditioningScreen extends Screen {
     scroll = 0;
   }
 
-  private static void panel(GuiGraphics g, int x, int y, int w, int h) {
+  private static void panel(GuiGraphicsExtractor g, int x, int y, int w, int h) {
     physical_progression.client.widget.VanillaTheme.inset(g, x, y, w, h);
   }
 

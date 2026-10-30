@@ -1,10 +1,10 @@
 package physical_progression.client.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public final class BodyPartWidget {
   public static boolean draw(
-      GuiGraphics g,
+      GuiGraphicsExtractor g,
       int x,
       int y,
       int width,

@@ -27,7 +27,7 @@ public final class CombatEventHandler {
 
   @SubscribeEvent
   public static void damage(LivingDamageEvent.Post e) {
-    if (e.getNewDamage() > 0
+    if (e.getHealthDamage() > 0
         && e.getSource().getDirectEntity() instanceof ServerPlayer p
         && e.getSource().getEntity() == p) {
       var d = p.getData(ModAttachments.PLAYER);

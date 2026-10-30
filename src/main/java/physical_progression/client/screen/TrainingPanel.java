@@ -220,10 +220,10 @@ public final class TrainingPanel {
                             + TrainingIntensityBar.status(
                                 live.getDoubleOr("intensity", 0.0), p.data))
                 .getString();
-    p.g.drawString(font, current, p.x, p.y, 0xFFE2DDCF);
+    p.g.text(font, current, p.x, p.y, 0xFFE2DDCF);
     p.y += 13;
     if (!t.contains("id")) {
-      p.g.drawString(
+      p.g.text(
           font,
           Component.translatable("ui.physical_progression.stimulus_note"),
           p.x,
@@ -248,6 +248,6 @@ public final class TrainingPanel {
               + PanelContext.number(t.getDoubleOr("maxBefore", 0.0))
               + " → "
               + PanelContext.number(t.getDoubleOr("maxAfter", 0.0));
-    p.g.drawString(font, last, p.x, p.y, 0xFFBBB6A7);
+    p.g.text(font, last, p.x, p.y, 0xFFBBB6A7);
   }
 }
