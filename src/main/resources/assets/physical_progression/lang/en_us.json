@@ -106,7 +106,6 @@
   "quality.physical_progression.optimal": "Optimal",
   "quality.physical_progression.very_high": "Very high",
   "key.physical_progression.open": "Open body status",
-  "key.categories.physical_progression": "Physical Progression",
   "ui.physical_progression.training_history": "RECENT TRAINING · CLICK FOR DETAILS",
   "ui.physical_progression.training_details": "TRAINING DETAILS",
   "ui.physical_progression.history_back": "Back to training history",
@@ -177,5 +176,6 @@
   "hud.physical_progression.short_legs": "Legs",
   "hud.physical_progression.short_left": "L",
   "hud.physical_progression.short_right": "R",
-  "hud.physical_progression.short_breath": "Lungs"
+  "hud.physical_progression.short_breath": "Lungs",
+  "key.category.physical_progression.general": "Physical Progression"
 }

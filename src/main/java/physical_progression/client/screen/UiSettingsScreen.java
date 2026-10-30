@@ -162,18 +162,26 @@ public final class UiSettingsScreen extends Screen {
     g.pose().popMatrix();
   }
 
-  @Override
-  public boolean mouseClicked(double x, double y, int b) {
-    return super.mouseClicked(x / uiScale, y / uiScale, b);
+  private net.minecraft.client.input.MouseButtonEvent scaled(
+      net.minecraft.client.input.MouseButtonEvent event) {
+    return new net.minecraft.client.input.MouseButtonEvent(
+        event.x() / uiScale, event.y() / uiScale, event.buttonInfo());
   }
 
   @Override
-  public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
-    return super.mouseDragged(x / uiScale, y / uiScale, button, dx / uiScale, dy / uiScale);
+  public boolean mouseClicked(
+      net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+    return super.mouseClicked(scaled(event), doubleClick);
   }
 
   @Override
-  public boolean mouseReleased(double x, double y, int b) {
-    return super.mouseReleased(x / uiScale, y / uiScale, b);
+  public boolean mouseDragged(
+      net.minecraft.client.input.MouseButtonEvent event, double dx, double dy) {
+    return super.mouseDragged(scaled(event), dx / uiScale, dy / uiScale);
+  }
+
+  @Override
+  public boolean mouseReleased(net.minecraft.client.input.MouseButtonEvent event) {
+    return super.mouseReleased(scaled(event));
   }
 }

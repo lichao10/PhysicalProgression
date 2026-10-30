@@ -2,7 +2,7 @@ package physical_progression.datamap;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -17,7 +17,7 @@ public record ItemWeightData(double weight) {
           .codec();
   public static final DataMapType<Item, ItemWeightData> TYPE =
       DataMapType.builder(
-              ResourceLocation.fromNamespaceAndPath("physical_progression", "item_weight"),
+              Identifier.fromNamespaceAndPath("physical_progression", "item_weight"),
               Registries.ITEM,
               CODEC)
           .build();

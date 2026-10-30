@@ -3,7 +3,7 @@ package physical_progression.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -23,7 +23,8 @@ public final class ConditioningClient {
           KeyConflictContext.IN_GAME,
           InputConstants.Type.KEYSYM,
           GLFW.GLFW_KEY_C,
-          "key.categories.physical_progression");
+          KeyMapping.Category.register(
+              Identifier.fromNamespaceAndPath("physical_progression", "general")));
 
   private static boolean climbHeld, movementHeld;
 
@@ -56,8 +57,7 @@ public final class ConditioningClient {
   @SubscribeEvent
   public static void layers(RegisterGuiLayersEvent e) {
     e.registerAboveAll(
-        ResourceLocation.fromNamespaceAndPath("physical_progression", "hud"),
-        ConditioningHud::render);
+        Identifier.fromNamespaceAndPath("physical_progression", "hud"), ConditioningHud::render);
   }
 
   @SubscribeEvent

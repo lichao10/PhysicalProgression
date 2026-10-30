@@ -25,6 +25,7 @@ public final class BodySystemTests {
           h.getLevel(),
           new GameProfile(UUID.randomUUID(), "body-test"),
           ClientInformation.createDefault());
+      TestPlayers.connect(this);
       setGameMode(GameType.SURVIVAL);
       MovementTracker.requestInput(this, true);
       setPos(h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1)).getCenter());

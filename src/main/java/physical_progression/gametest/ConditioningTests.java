@@ -21,6 +21,7 @@ public final class ConditioningTests {
             h.getLevel(),
             new GameProfile(UUID.randomUUID(), "physical_progression-test"),
             ClientInformation.createDefault());
+    TestPlayers.connect(p);
     p.setGameMode(GameType.SURVIVAL);
     p.setPos(h.absolutePos(new net.minecraft.core.BlockPos(1, 2, 1)).getCenter());
     return p;

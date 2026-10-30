@@ -25,6 +25,7 @@ public final class GrowthCurveTests {
           h.getLevel(),
           new GameProfile(UUID.randomUUID(), "growth-replay"),
           ClientInformation.createDefault());
+      TestPlayers.connect(this);
       setGameMode(GameType.SURVIVAL);
       setPos(h.absolutePos(new BlockPos(1, 2, 1)).getCenter());
       setOnGround(true);

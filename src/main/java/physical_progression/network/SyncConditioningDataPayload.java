@@ -4,12 +4,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import physical_progression.attachment.PlayerConditioningData;
 
 public record SyncConditioningDataPayload(CompoundTag values) implements CustomPacketPayload {
   public static final Type<SyncConditioningDataPayload> TYPE =
-      new Type<>(ResourceLocation.fromNamespaceAndPath("physical_progression", "body"));
+      new Type<>(Identifier.fromNamespaceAndPath("physical_progression", "body"));
   public static final StreamCodec<RegistryFriendlyByteBuf, SyncConditioningDataPayload>
       STREAM_CODEC =
           new StreamCodec<>() {

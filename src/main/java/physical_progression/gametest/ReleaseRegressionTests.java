@@ -27,6 +27,7 @@ public final class ReleaseRegressionTests {
           h.getLevel(),
           new GameProfile(UUID.randomUUID(), "release-test"),
           ClientInformation.createDefault());
+      TestPlayers.connect(this);
       setGameMode(GameType.SURVIVAL);
       setPos(h.absolutePos(new BlockPos(1, 2, 1)).getCenter());
     }

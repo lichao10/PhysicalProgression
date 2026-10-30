@@ -106,7 +106,6 @@
   "quality.physical_progression.optimal": "最佳",
   "quality.physical_progression.very_high": "很高",
   "key.physical_progression.open": "打开身体状态",
-  "key.categories.physical_progression": "Physical Progression",
   "ui.physical_progression.training_history": "近期训练 · 点击查看细节",
   "ui.physical_progression.training_details": "训练详情",
   "ui.physical_progression.history_back": "返回训练记录",
@@ -177,5 +176,6 @@
   "hud.physical_progression.short_legs": "腿部",
   "hud.physical_progression.short_left": "左臂",
   "hud.physical_progression.short_right": "右臂",
-  "hud.physical_progression.short_breath": "肺活量"
+  "hud.physical_progression.short_breath": "肺活量",
+  "key.category.physical_progression.general": "Physical Progression"
 }

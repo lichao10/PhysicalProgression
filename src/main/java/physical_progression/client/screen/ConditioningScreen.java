@@ -187,7 +187,10 @@ public class ConditioningScreen extends Screen {
   }
 
   @Override
-  public boolean mouseClicked(double x, double y, int button) {
+  public boolean mouseClicked(
+      net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+    double x = event.x(), y = event.y();
+    int button = event.button();
     if (button == 0
         && page.equals("training")
         && x / scale >= left + 223
@@ -201,12 +204,16 @@ public class ConditioningScreen extends Screen {
         return true;
       }
     }
-    return super.mouseClicked(x / scale, y / scale, button);
+    return super.mouseClicked(
+        new net.minecraft.client.input.MouseButtonEvent(x / scale, y / scale, event.buttonInfo()),
+        doubleClick);
   }
 
   @Override
-  public boolean mouseReleased(double x, double y, int button) {
-    return super.mouseReleased(x / scale, y / scale, button);
+  public boolean mouseReleased(net.minecraft.client.input.MouseButtonEvent event) {
+    return super.mouseReleased(
+        new net.minecraft.client.input.MouseButtonEvent(
+            event.x() / scale, event.y() / scale, event.buttonInfo()));
   }
 
   @Override
@@ -219,11 +226,11 @@ public class ConditioningScreen extends Screen {
   }
 
   @Override
-  public boolean keyPressed(int key, int scan, int modifiers) {
-    if (ConditioningClient.OPEN_SCREEN.matches(key, scan)) {
+  public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
+    if (ConditioningClient.OPEN_SCREEN.matches(event)) {
       onClose();
       return true;
     }
-    return super.keyPressed(key, scan, modifiers);
+    return super.keyPressed(event);
   }
 }

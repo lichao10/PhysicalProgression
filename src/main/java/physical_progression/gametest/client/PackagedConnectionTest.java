@@ -61,16 +61,17 @@ public final class PackagedConnectionTest {
     var d = mc.player.getData(ClientSnapshot.TYPE);
     if (!d.ready() || !d.attributes.contains("climbing")) return;
     if (phase == 1) {
-      if (!mc.player.hasPermissions(2)) {
+      if (!mc.player
+          .permissions()
+          .hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER)) {
         if (ticks++ == 0)
           com.mojang.logging.LogUtils.getLogger()
-              .info("CONNECTION_QA awaiting_op player={}", mc.player.getGameProfile().getName());
+              .info("CONNECTION_QA awaiting_op player={}", mc.player.getGameProfile().name());
         require(ticks < 400, "fixture operator permission was not supplied");
         return;
       }
       com.mojang.logging.LogUtils.getLogger()
-          .info(
-              "CONNECTION_QA connected player={} protocol=5", mc.player.getGameProfile().getName());
+          .info("CONNECTION_QA connected player={} protocol=5", mc.player.getGameProfile().name());
       mc.player.connection.sendCommand("tp @s 0.65 64 0.5 -90 0");
       phase = 2;
       ticks = 0;
@@ -129,7 +130,7 @@ public final class PackagedConnectionTest {
       return;
     }
     if (phase == 7) {
-      if (++ticks == 1) org.lwjgl.glfw.GLFW.glfwSetCursorPos(mc.getWindow().getWindow(), 15, 15);
+      if (++ticks == 1) org.lwjgl.glfw.GLFW.glfwSetCursorPos(mc.getWindow().handle(), 15, 15);
       if (ticks < 180) return;
       require(mc.screen instanceof ConditioningScreen, "body preview stays open with real player");
       Screenshot.grab(

@@ -26,6 +26,7 @@ abstract class MiningMixin {
       BlockPos pos,
       net.minecraft.world.level.block.state.BlockState state,
       boolean canHarvest,
+      net.minecraft.world.item.ItemStack tool,
       CallbackInfoReturnable<Boolean> ci) {
     if (ci.getReturnValueZ())
       physical_progression.event.MiningEventHandler.broken(

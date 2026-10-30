@@ -20,8 +20,8 @@ public final class ConditioningGameTests {
     GrowthCurveTests.class
   };
 
-  private static ResourceLocation id(Method method) {
-    return ResourceLocation.fromNamespaceAndPath(
+  private static Identifier id(Method method) {
+    return Identifier.fromNamespaceAndPath(
         "physical_progression",
         method.getDeclaringClass().getSimpleName().toLowerCase(Locale.ROOT)
             + "/"
@@ -63,13 +63,13 @@ public final class ConditioningGameTests {
   public static void instances(RegisterGameTestsEvent event) {
     var environment =
         event.registerEnvironment(
-            ResourceLocation.fromNamespaceAndPath("physical_progression", "default"));
+            Identifier.fromNamespaceAndPath("physical_progression", "default"));
     for (var method : methods()) {
       var annotation = method.getAnnotation(ConditioningGameTest.class);
       var data =
           new TestData<>(
               environment,
-              ResourceLocation.fromNamespaceAndPath("physical_progression", annotation.template()),
+              Identifier.fromNamespaceAndPath("physical_progression", annotation.template()),
               annotation.timeoutTicks(),
               0,
               true);

@@ -13,7 +13,11 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 @Mod("physical_progressionqa")
 @EventBusSubscriber(modid = "physical_progressionqa", value = Dist.CLIENT)
 public final class PackagedQaBootstrap {
-  public PackagedQaBootstrap(){if(Boolean.getBoolean("physical_progression.connectionQa"))net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(PackagedConnectionTest.class);}
+  public PackagedQaBootstrap() {
+    if (Boolean.getBoolean("physical_progression.connectionQa"))
+      net.neoforged.neoforge.common.NeoForge.EVENT_BUS.register(PackagedConnectionTest.class);
+  }
+
   private static boolean connected;
   private static int ticks;
 

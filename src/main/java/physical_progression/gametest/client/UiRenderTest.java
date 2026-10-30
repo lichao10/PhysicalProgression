@@ -40,6 +40,21 @@ public final class UiRenderTest {
   private static physical_progression.config.ConditioningClientConfig.HudAnchor oldAnchor;
   private static boolean finished;
 
+  private static boolean click(
+      net.minecraft.client.gui.screens.Screen screen, double x, double y, int button) {
+    return screen.mouseClicked(
+        new net.minecraft.client.input.MouseButtonEvent(
+            x, y, new net.minecraft.client.input.MouseButtonInfo(button, 0)),
+        false);
+  }
+
+  private static boolean release(
+      net.minecraft.client.gui.screens.Screen screen, double x, double y, int button) {
+    return screen.mouseReleased(
+        new net.minecraft.client.input.MouseButtonEvent(
+            x, y, new net.minecraft.client.input.MouseButtonInfo(button, 0)));
+  }
+
   @SubscribeEvent
   public static void start(ClientTickEvent.Post event) {
     if (!Boolean.getBoolean("physical_progression.uiQa") || screen != null || finished) return;
@@ -120,7 +135,7 @@ public final class UiRenderTest {
               Math.min(screen.width / 520f, screen.height / 340f));
       int left = ((int) (screen.width / scale) - 520) / 2,
           top = ((int) (screen.height / scale) - 340) / 2;
-      screen.mouseClicked((left + 445) * scale, (top + 17) * scale, 0);
+      click(screen, (left + 445) * scale, (top + 17) * scale, 0);
       if (!(mc.screen instanceof physical_progression.client.screen.UiSettingsScreen))
         throw new IllegalStateException("Settings entry failed");
       return;
@@ -129,17 +144,17 @@ public final class UiRenderTest {
       var settings = mc.screen;
       var oldMode = physical_progression.config.ConditioningClientConfig.HUD_MODE.get();
       float settingScale = Math.min(1, Math.min(settings.width / 340f, settings.height / 280f));
-      settings.mouseClicked(settings.width / 2.0, 44 * settingScale, 0);
+      click(settings, settings.width / 2.0, 44 * settingScale, 0);
       if (physical_progression.config.ConditioningClientConfig.HUD_MODE.get() == oldMode)
         throw new IllegalStateException("Settings did not apply");
-      for (int i = 0; i < 3; i++) settings.mouseClicked(settings.width / 2.0, 44 * settingScale, 0);
+      for (int i = 0; i < 3; i++) click(settings, settings.width / 2.0, 44 * settingScale, 0);
       if (physical_progression.config.ConditioningClientConfig.HUD_MODE.get() != oldMode)
         throw new IllegalStateException("Settings cycle did not restore preference");
       double oldText = physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.get();
-      settings.mouseClicked(settings.width / 2.0, 91 * settingScale, 0);
-      settings.mouseReleased(settings.width / 2.0, 91 * settingScale, 0);
-      settings.mouseClicked(settings.width / 2.0 + 100 * settingScale, 91 * settingScale, 0);
-      settings.mouseReleased(settings.width / 2.0 + 100 * settingScale, 91 * settingScale, 0);
+      click(settings, settings.width / 2.0, 91 * settingScale, 0);
+      release(settings, settings.width / 2.0, 91 * settingScale, 0);
+      click(settings, settings.width / 2.0 + 100 * settingScale, 91 * settingScale, 0);
+      release(settings, settings.width / 2.0 + 100 * settingScale, 91 * settingScale, 0);
       if (physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.get() <= 0.8)
         throw new IllegalStateException("Slider did not map screen coordinates");
       physical_progression.config.ConditioningClientConfig.HUD_TEXT_SCALE.set(oldText);
@@ -157,7 +172,7 @@ public final class UiRenderTest {
     if (stage == 16) {
       mc.setScreen(new physical_progression.client.screen.UiSettingsScreen(screen));
       float scale = Math.min(1, Math.min(mc.screen.width / 340f, mc.screen.height / 280f));
-      mc.screen.mouseClicked(mc.screen.width / 2.0 + 70 * scale, 232 * scale, 0);
+      click(mc.screen, mc.screen.width / 2.0 + 70 * scale, 232 * scale, 0);
       if (!(mc.screen instanceof physical_progression.client.screen.UiPreviewScreen))
         throw new IllegalStateException("Preview entry failed");
       return;
@@ -166,7 +181,7 @@ public final class UiRenderTest {
       float scale = Math.min(1, Math.min(screen.width / 520f, screen.height / 340f));
       int left = ((int) (screen.width / scale) - 520) / 2,
           top = ((int) (screen.height / scale) - 340) / 2;
-      if (!screen.mouseClicked((left + 250) * scale, (top + (stage == 8 ? 72 : 51)) * scale, 0))
+      if (!click(screen, (left + 250) * scale, (top + (stage == 8 ? 72 : 51)) * scale, 0))
         throw new IllegalStateException("Training history click failed");
     } else screen.showPage(PAGES[stage]);
   }
