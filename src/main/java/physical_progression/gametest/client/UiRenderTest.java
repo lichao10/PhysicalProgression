@@ -83,7 +83,7 @@ public final class UiRenderTest {
         || (mc.screen != screen
             && !(mc.screen instanceof physical_progression.client.screen.UiSettingsScreen)
             && !(mc.screen instanceof physical_progression.client.screen.UiPreviewScreen))
-        || ++frames < 45) return;
+        || ++frames < (stage == 10 ? 120 : 45)) return;
     frames = 0;
     Screenshot.grab(
         mc.gameDirectory,

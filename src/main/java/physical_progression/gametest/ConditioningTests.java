@@ -1,9 +1,6 @@
 package physical_progression.gametest;
 
 import com.mojang.authlib.GameProfile;
-import physical_progression.arm.*;
-import physical_progression.attachment.*;
-import physical_progression.stamina.*;
 import java.util.UUID;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.server.level.ClientInformation;
@@ -12,6 +9,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.level.GameType;
 import net.neoforged.neoforge.gametest.*;
+import physical_progression.arm.*;
+import physical_progression.attachment.*;
+import physical_progression.stamina.*;
 
 @GameTestHolder("physical_progression")
 @PrefixGameTestTemplate(false)
@@ -101,7 +101,11 @@ public final class ConditioningTests {
     physical_progression.body.BodyTrainingSystem.record(d, "sprinting", 5, 5, 1);
     d.body.add(physical_progression.body.BodyAbility.CARDIO, 5);
     for (int i = 0; i < 60; i++) physical_progression.body.BodyTrainingSystem.tick(d, false);
-    near(h, d.body.abilities.get(physical_progression.body.BodyAbility.CARDIO).xp, 0, "tiny session");
+    near(
+        h,
+        d.body.abilities.get(physical_progression.body.BodyAbility.CARDIO).xp,
+        0,
+        "tiny session");
     for (int session = 0; session < 8; session++) {
       physical_progression.body.BodyTrainingSystem.record(d, "sprinting", 40, 40, 1);
       d.body.add(physical_progression.body.BodyAbility.CARDIO, 40);
@@ -152,7 +156,8 @@ public final class ConditioningTests {
         new net.minecraft.network.RegistryFriendlyByteBuf(
             io.netty.buffer.Unpooled.buffer(), h.getLevel().registryAccess());
     try {
-      physical_progression.network.SyncConditioningDataPayload.STREAM_CODEC.encode(buffer, snapshot);
+      physical_progression.network.SyncConditioningDataPayload.STREAM_CODEC.encode(
+          buffer, snapshot);
       h.assertTrue(
           snapshot.equals(
               physical_progression.network.SyncConditioningDataPayload.STREAM_CODEC.decode(buffer)),
@@ -180,7 +185,8 @@ public final class ConditioningTests {
             info.modelCustomisation(),
             HumanoidArm.LEFT,
             info.textFilteringEnabled(),
-            info.allowsListing()));
+            info.allowsListing(),
+            info.particleStatus()));
     h.assertTrue(ArmSide.resolve(p, InteractionHand.MAIN_HAND) == ArmSide.LEFT, "left handed main");
     h.assertTrue(ArmSide.resolve(p, InteractionHand.OFF_HAND) == ArmSide.RIGHT, "left handed off");
     near(

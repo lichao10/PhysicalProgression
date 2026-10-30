@@ -1,12 +1,12 @@
 package physical_progression.network;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import physical_progression.arm.*;
 import physical_progression.attachment.*;
 import physical_progression.body.*;
 import physical_progression.config.ConditioningConfig;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 
 public final class BodySnapshots {
   public static CompoundTag resources(PlayerConditioningData d) {
@@ -118,7 +118,10 @@ public final class BodySnapshots {
     double weight = ItemWeightManager.weight(stack),
         multiplier = DerivedPerformance.armCostMultiplier(d, arm);
     t.putString(
-        key + "Item", stack.isEmpty() ? "ui.physical_progression.empty_hand" : stack.getDescriptionId());
+        key + "Item",
+        stack.isEmpty()
+            ? "ui.physical_progression.empty_hand"
+            : stack.getItem().getDescriptionId());
     if (stack.has(net.minecraft.core.component.DataComponents.CUSTOM_NAME))
       t.putString(key + "CustomName", stack.getHoverName().getString());
     t.putDouble(key + "Weight", weight);

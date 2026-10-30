@@ -94,11 +94,7 @@ public class ConditioningScreen extends Screen {
     var footer = new PanelContext(g, data, left + 16, top + 280, 488, mx, my);
     if (data.ready()) {
       BodyPanel.model(model);
-      g.enableScissor(
-          (int) ((left + 223) * scale),
-          (int) ((top + 40) * scale),
-          (int) ((left + 511) * scale),
-          (int) ((top + 264) * scale));
+      g.enableScissor(left + 223, top + 40, left + 511, top + 264);
       switch (page) {
         case "body" -> BodyPanel.details(content);
         case "legs" -> AttributePanel.legs(content);

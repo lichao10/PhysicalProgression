@@ -10,14 +10,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class ConnectionTeleportMixin {
   @Shadow public ServerPlayer player;
 
-  @Inject(method = "teleport(DDDFFLjava/util/Set;)V", at = @At("HEAD"))
+  @Inject(
+      method = "teleport(Lnet/minecraft/world/entity/PositionMoveRotation;Ljava/util/Set;)V",
+      at = @At("HEAD"))
   private void physical_progression$teleport(
-      double x,
-      double y,
-      double z,
-      float yaw,
-      float pitch,
-      java.util.Set<net.minecraft.world.entity.RelativeMovement> relative,
+      net.minecraft.world.entity.PositionMoveRotation movement,
+      java.util.Set<net.minecraft.world.entity.Relative> relative,
       CallbackInfo ci) {
     physical_progression.stamina.MovementTracker.suppress(player, 3);
   }
